@@ -1,14 +1,21 @@
 package com.KiyoInteriors.ECommerce.service;
 
 import com.KiyoInteriors.ECommerce.DTO.Request.CategoryRequest;
+import com.KiyoInteriors.ECommerce.DTO.Request.ProductRequest;
 import com.KiyoInteriors.ECommerce.entity.Category;
-import com.KiyoInteriors.ECommerce.exceptions.CategoryNotFoundException;
+import com.KiyoInteriors.ECommerce.entity.Image;
+import com.KiyoInteriors.ECommerce.entity.Product;
+import com.KiyoInteriors.ECommerce.exceptions.ItemNotFoundException;
 import com.KiyoInteriors.ECommerce.exceptions.ConstraintException;
 import com.KiyoInteriors.ECommerce.repository.CategoryRepository;
 import com.KiyoInteriors.ECommerce.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -17,7 +24,7 @@ public class AdminService {
     private final CategoryRepository categoryRepository;
     private final ProductRepository productRepository;
 
-    public String addCategory(CategoryRequest request){
+    public void addCategory(CategoryRequest request){
         Optional<Category> tempCategory = categoryRepository.findByCategory(request.getCategory());
         if(tempCategory.isPresent()){
             throw new ConstraintException("Category Already Exists");
@@ -25,14 +32,60 @@ public class AdminService {
         Category category = new Category();
         category.setCategory(request.getCategory());
         categoryRepository.save(category);
-        return "Category Saved";
     }
 
-    public String updateCategory(String id, CategoryRequest request){
-        Category category = categoryRepository.findById(id).orElseThrow(()->new CategoryNotFoundException("Category Not Found"));
+    public void updateCategory(String name, CategoryRequest request){
+        Category category = categoryRepository.findByCategory(name)
+                .orElseThrow(()->new ItemNotFoundException("Category Not Found"));
         category.setCategory(request.getCategory());
         categoryRepository.save(category);
-        return "Category Updated";
     }
 
+    public void addProduct(ProductRequest productRequest) throws IOException {
+        Product newProduct = new Product();
+        System.out.println("newProduct = " + newProduct);
+        newProduct.setCategory(categoryRepository
+                .findByCategory(productRequest
+                        .getCategory())
+                .orElseThrow(()->new ItemNotFoundException("Category Not Found")));
+        newProduct.setProductName(productRequest.getProductName());
+        newProduct.setProductPrize(productRequest.getProductPrize());
+        newProduct.setProductDescription(productRequest.getProductDescription());
+        if (productRequest.getProductPics()!=null) {
+            List<Image> images = new ArrayList<>();
+            for (MultipartFile file : productRequest.getProductPics()) {
+                Image image = Image.builder()
+                        .data(file.getBytes())
+                        .fileName(file.getOriginalFilename())
+                        .build();
+                images.add(image);
+            }
+            newProduct.setProductPics(images);
+        }
+        productRepository.save(newProduct);
+    }
+
+    public void updateProduct(String id, ProductRequest productRequest) throws IOException{
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ItemNotFoundException("Product Not Found"));
+        product.setCategory(categoryRepository
+                .findByCategory(productRequest
+                        .getCategory())
+                .orElseThrow(()->new ItemNotFoundException("Category Not Found")));
+        product.setProductName(productRequest.getProductName());
+        product.setProductPrize(productRequest.getProductPrize());
+        product.setProductDescription(productRequest.getProductDescription());
+        if (productRequest.getProductPics()!=null) {
+            List<Image> images = new ArrayList<>();
+            for (MultipartFile file : productRequest.getProductPics()) {
+                Image image = Image.builder()
+                        .data(file.getBytes())
+                        .fileName(file.getOriginalFilename())
+                        .build();
+                images.add(image);
+            }
+            product.setProductPics(images);
+        }
+        productRepository.save(product);
+    }
 }

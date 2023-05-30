@@ -32,8 +32,7 @@ public class SecurityConfig
                 .authorizeHttpRequests(auth->auth
                         .requestMatchers("/admin/**").hasAuthority(UserRole.ROLE_ADMIN.name())
                         .requestMatchers("/user/**").hasAuthority(UserRole.ROLE_USER.name())
-                        .requestMatchers("/auth/**").permitAll()
-                        .anyRequest().authenticated())
+                        .anyRequest().permitAll())
                 .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(authEntryPoint))
 //                .addFilterAfter(authFilter, ExceptionTranslationFilter.class)

@@ -45,16 +45,16 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @ExceptionHandler(CategoryNotFoundException.class)
-    public ResponseEntity<ErrorDetails> categoryNotFoundHandling(CategoryNotFoundException exception, WebRequest webRequest){
+    @ExceptionHandler(ItemNotFoundException.class)
+    public ResponseEntity<ErrorDetails> categoryNotFoundHandling(ItemNotFoundException exception, WebRequest webRequest){
         ErrorDetails errorDetails = new ErrorDetails(new Date(), exception.getMessage(), webRequest.getDescription(false));
         return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
     }
 
-//    @ExceptionHandler(MalformedJwtException.class)
-//    public ResponseEntity<ErrorDetails> globalJWTException(Exception exception, WebRequest webRequest){
-//        ErrorDetails errorDetails = new ErrorDetails(new Date(), exception.getMessage(), webRequest.getDescription(false));
+    @ExceptionHandler(APIException.class)
+    public ResponseEntity<ErrorDetails> globalJWTException(APIException exception, WebRequest webRequest){
+        ErrorDetails errorDetails = new ErrorDetails(new Date(), exception.getMessage(), webRequest.getDescription(false));
 //        System.out.println(exception);
-//        return new ResponseEntity<>(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR);
-//    }
+        return new ResponseEntity<>(errorDetails, HttpStatus.UNAUTHORIZED);
+    }
 }

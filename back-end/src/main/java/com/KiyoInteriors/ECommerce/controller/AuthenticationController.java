@@ -5,16 +5,17 @@ import com.KiyoInteriors.ECommerce.DTO.Request.ChangePasswordDTO;
 import com.KiyoInteriors.ECommerce.DTO.Request.UserDTO;
 import com.KiyoInteriors.ECommerce.DTO.Response.AuthenticationResponse;
 import com.KiyoInteriors.ECommerce.DTO.Response.MiscResponse;
+import com.KiyoInteriors.ECommerce.entity.User;
+import com.KiyoInteriors.ECommerce.entity.UserRole;
+import com.KiyoInteriors.ECommerce.exceptions.UserNotFoundException;
+import com.KiyoInteriors.ECommerce.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import jakarta.validation.Valid;
 import com.KiyoInteriors.ECommerce.service.AuthenticationService;
 import com.KiyoInteriors.ECommerce.service.UserService;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 
@@ -23,7 +24,7 @@ import java.io.IOException;
 @RequestMapping( "/auth" )
 public class AuthenticationController
 {
-    private final UserService userService;
+    private final UserRepository userRepository;
     private final AuthenticationService authService;
 
     @PostMapping( "/register" )
@@ -35,12 +36,12 @@ public class AuthenticationController
     }
 
     @PostMapping( "/authenticate" )
-    public ResponseEntity<AuthenticationResponse> register(@RequestBody AuthenticationRequest request) {
+    public ResponseEntity<AuthenticationResponse> register(@Valid @RequestBody AuthenticationRequest request) {
         return ResponseEntity.ok(authService.authenticate(request));
     }
 
     @PostMapping("/changePassword")
-    public ResponseEntity<MiscResponse> changePassword(@RequestBody ChangePasswordDTO changePasswordDTO){
+    public ResponseEntity<MiscResponse> changePassword(@Valid @RequestBody ChangePasswordDTO changePasswordDTO){
         authService.changePassword(changePasswordDTO);
         return ResponseEntity.ok(MiscResponse.builder()
                 .response("Password Changed").build());
@@ -52,6 +53,16 @@ public class AuthenticationController
         return ResponseEntity.ok(MiscResponse.builder().response("Logged out").build());
     }
 
-
+    @PostMapping("/updatePrivilege/{id}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<MiscResponse> changePrivilege(@PathVariable String id){
+        User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User Not Found"));
+        user.setRole(UserRole.ROLE_ADMIN);
+        userRepository.save(user);
+        return ResponseEntity.ok(MiscResponse
+                .builder()
+                .response("Privileges Updated")
+                .build());
+    }
 
 }

@@ -1,0 +1,16 @@
+spring:
+  data:
+    mongodb:
+      uri: mongodb+srv://vishalpvnedu:vishalmongo@cluster0.sbtwpz7.mongodb.net/e-commerce?retryWrites=true&w=majority
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 811320824769-vgh9cfj27gqcc84p7somqt2c73vbst95.apps.googleusercontent.com
+            client-secret: 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
+logging:
+  level:
+    org:
+      springframework:
+        security: debug

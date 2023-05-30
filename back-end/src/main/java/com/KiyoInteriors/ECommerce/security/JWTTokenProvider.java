@@ -1,5 +1,6 @@
 package com.KiyoInteriors.ECommerce.security;
 
+import com.KiyoInteriors.ECommerce.exceptions.APIException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -50,28 +51,28 @@ public class JWTTokenProvider {
 
      //validate JWT
      public boolean validateToken(String token){
-//          try {
+          try {
                Jwts.parserBuilder()
                        .setSigningKey(key())
                        .build()
                        .parse(token);
                return true;
-//          }
-//          catch (MalformedJwtException e){
-//               throw new APIException("Invalid Javascript Web Token", HttpStatus.UNAUTHORIZED);
-//          }
-//          catch (ExpiredJwtException e){
-//               throw new APIException("Expired Javascript Web Token", HttpStatus.BAD_REQUEST);
-//          }
-//          catch (UnsupportedJwtException e){
-//               throw new APIException("Unsupported Javascript Web Token", HttpStatus.BAD_REQUEST);
-//          }
-//          catch (IllegalArgumentException e){
-//               throw new APIException("Javascript Web Token claims are empty", HttpStatus.BAD_REQUEST);
-//          }
-//          catch (SignatureException e){
-//               throw new APIException("Invalid JWT", HttpStatus.BAD_REQUEST);
-//          }
+          }
+          catch (MalformedJwtException e){
+               throw new APIException("Invalid Javascript Web Token", HttpStatus.UNAUTHORIZED);
+          }
+          catch (ExpiredJwtException e){
+               throw new APIException("Expired Javascript Web Token", HttpStatus.BAD_REQUEST);
+          }
+          catch (UnsupportedJwtException e){
+               throw new APIException("Unsupported Javascript Web Token", HttpStatus.BAD_REQUEST);
+          }
+          catch (IllegalArgumentException e){
+               throw new APIException("Javascript Web Token claims are empty", HttpStatus.BAD_REQUEST);
+          }
+          catch (SignatureException e){
+               throw new APIException("Invalid JWT", HttpStatus.BAD_REQUEST);
+          }
      }
 
 }

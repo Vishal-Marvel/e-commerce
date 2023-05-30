@@ -1,13 +1,13 @@
 package com.KiyoInteriors.ECommerce.DTO.Request;
 
-import com.KiyoInteriors.ECommerce.entity.Image;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 @Data
-public class ProductDTO {
+public class ProductRequest {
     @NotBlank(message = "Name is necessary")
     private String productName;
     @NotBlank(message = "Description is necessary")
@@ -16,5 +16,5 @@ public class ProductDTO {
     private Double productPrize;
     @NotBlank(message = "Category is necessary")
     private String category;
-    private List<Image> productPics;
+    private List<MultipartFile> productPics;
 }

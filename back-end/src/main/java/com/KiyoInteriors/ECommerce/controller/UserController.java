@@ -1,6 +1,7 @@
 package com.KiyoInteriors.ECommerce.controller;
 
 import com.KiyoInteriors.ECommerce.DTO.Response.MiscResponse;
+import com.KiyoInteriors.ECommerce.DTO.Response.ProductResponse;
 import com.KiyoInteriors.ECommerce.exceptions.UserNotFoundException;
 import com.KiyoInteriors.ECommerce.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import com.KiyoInteriors.ECommerce.service.UserService;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 @RestController

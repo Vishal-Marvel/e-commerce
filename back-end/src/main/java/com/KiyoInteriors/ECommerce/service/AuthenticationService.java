@@ -1,6 +1,8 @@
 package com.KiyoInteriors.ECommerce.service;
 
+import com.KiyoInteriors.ECommerce.DTO.ChangePasswordDTO;
 import com.KiyoInteriors.ECommerce.exceptions.ConstraintException;
+import com.KiyoInteriors.ECommerce.exceptions.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -57,9 +59,18 @@ public class AuthenticationService
         return AuthenticationResponse.builder().token(jwtTokenProvider.generateToken(auth)).role(user.getRole().name()).build();
     }
 
-    public String logout() {
-        SecurityContextHolder.getContext().setAuthentication(null);
-        return "Logout";
+    public void changePassword(ChangePasswordDTO changePasswordDTO){
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+            username, changePasswordDTO.getOldPassword()
+        ));
+        User user = userRepository.findUserByUsername(username)
+                .orElseThrow(()-> new UserNotFoundException("User Not Found"));
+        user.setPassword(passwordEncoder.encode(changePasswordDTO.getNewPassword()));
+        userRepository.save(user);
     }
 
+    public void logout() {
+        SecurityContextHolder.getContext().setAuthentication(null);
+    }
 }

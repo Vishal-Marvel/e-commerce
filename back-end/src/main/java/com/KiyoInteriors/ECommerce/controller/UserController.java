@@ -1,22 +1,19 @@
 package com.KiyoInteriors.ECommerce.controller;
 
+import com.KiyoInteriors.ECommerce.DTO.MiscResponse;
 import com.KiyoInteriors.ECommerce.exceptions.UserNotFoundException;
 import com.KiyoInteriors.ECommerce.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import jakarta.validation.Valid;
 import com.KiyoInteriors.ECommerce.DTO.UserDTO;
-import org.springframework.web.bind.annotation.GetMapping;
 import com.KiyoInteriors.ECommerce.entity.User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import com.KiyoInteriors.ECommerce.service.UserService;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -32,7 +29,7 @@ public class UserController
     @GetMapping
     public ResponseEntity<User> getUser() {
         String name = SecurityContextHolder.getContext().getAuthentication().getName();
-        Optional<User> user = userRepository.findUserByUsernameOrEmail(name, name);
+        Optional<User> user = userRepository.findUserByUsername(name);
         if (user.isEmpty()){
             throw new UserNotFoundException("User Not Exists");
         }
@@ -40,16 +37,25 @@ public class UserController
     }
 
     @PutMapping
-    public ResponseEntity<String> updateUser(@Valid @ModelAttribute UserDTO userDTO, Authentication auth) throws IOException {
+    public ResponseEntity<MiscResponse> updateUser(@Valid @ModelAttribute UserDTO userDTO) throws IOException {
         String name = SecurityContextHolder.getContext().getAuthentication().getName();
-        Optional<User> user = userRepository.findUserByUsernameOrEmail(name, name);
+        Optional<User> user = userRepository.findUserByUsername(name);
         if (user.isEmpty()){
             throw new UserNotFoundException("User Not Exists");
         }
+        userService.updateUser(userDTO, user.get().getId());
+        return ResponseEntity.ok(MiscResponse.builder().response("User Updated").build());
+    }
 
-        this.userService.updateUser(userDTO, user.get().getId());
-        return ResponseEntity.ok("User Updated");
-
+    @DeleteMapping
+    public ResponseEntity<MiscResponse> deleteUser(){
+        String name  = SecurityContextHolder.getContext().getAuthentication().getName();
+        Optional<User> user = userRepository.findUserByUsername( name);
+        if (user.isEmpty()){
+            throw new UserNotFoundException("User Not Exists");
+        }
+        userRepository.delete(user.get());
+        return ResponseEntity.ok(MiscResponse.builder().response("User Deleted").build());
     }
 
 }

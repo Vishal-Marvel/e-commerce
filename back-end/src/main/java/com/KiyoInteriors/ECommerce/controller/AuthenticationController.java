@@ -16,6 +16,8 @@ import com.KiyoInteriors.ECommerce.service.UserService;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping( "/auth" )
@@ -25,14 +27,11 @@ public class AuthenticationController
     private final AuthenticationService authService;
 
     @PostMapping( "/register" )
-    public ResponseEntity<String> register(@Valid @ModelAttribute UserDTO userDTO) {
-        try {
-            this.authService.register(userDTO);
-            return ResponseEntity.ok("User Saved");
-        }
-        catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+    public ResponseEntity<String> register(@Valid @ModelAttribute UserDTO userDTO) throws IOException {
+
+        authService.register(userDTO);
+        return ResponseEntity.ok("User Saved");
+
     }
 
     @PostMapping( "/authenticate" )

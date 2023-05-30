@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 
+import java.io.IOException;
 import java.util.Date;
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -23,13 +24,13 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorDetails, HttpStatus.UNAUTHORIZED);
     }
 
-//    @ExceptionHandler(APIException.class)
-//    public ResponseEntity<ErrorDetails> handleAPIException(APIException exception, WebRequest webRequest) {
-//        ErrorDetails errorDetails = new ErrorDetails(new Date(), exception.getMessage(), webRequest.getDescription(false));
-//        return new ResponseEntity<>(errorDetails, exception.getStatus());
-//    }
+    @ExceptionHandler(IOException.class)
+    public ResponseEntity<ErrorDetails> handleIOException(IOException exception, WebRequest webRequest) {
+        ErrorDetails errorDetails = new ErrorDetails(new Date(), exception.getMessage(), webRequest.getDescription(false));
+        return new ResponseEntity<>(errorDetails,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 
-    @ExceptionHandler(java.lang.Exception.class)
+    @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorDetails> globalException(java.lang.Exception exception, WebRequest webRequest){
         ErrorDetails errorDetails = new ErrorDetails(new Date(), exception.getMessage(), webRequest.getDescription(false));
 //        System.out.println(exception);

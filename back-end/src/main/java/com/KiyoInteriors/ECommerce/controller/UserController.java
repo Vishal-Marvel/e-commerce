@@ -18,6 +18,7 @@ import com.KiyoInteriors.ECommerce.service.UserService;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
 import java.util.Optional;
 
 @RestController
@@ -39,19 +40,16 @@ public class UserController
     }
 
     @PutMapping
-    public ResponseEntity<String> updateUser(@Valid @ModelAttribute UserDTO userDTO, Authentication auth) {
+    public ResponseEntity<String> updateUser(@Valid @ModelAttribute UserDTO userDTO, Authentication auth) throws IOException {
         String name = SecurityContextHolder.getContext().getAuthentication().getName();
         Optional<User> user = userRepository.findUserByUsernameOrEmail(name, name);
         if (user.isEmpty()){
             throw new UserNotFoundException("User Not Exists");
         }
-        try {
-            this.userService.updateUser(userDTO, user.get().getId());
-            return ResponseEntity.ok("User Updated");
-        }
-        catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+
+        this.userService.updateUser(userDTO, user.get().getId());
+        return ResponseEntity.ok("User Updated");
+
     }
 
 }

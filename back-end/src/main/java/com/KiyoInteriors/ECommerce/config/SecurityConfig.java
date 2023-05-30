@@ -30,7 +30,7 @@ public class SecurityConfig
     SecurityFilterChain securityFilterChain(final HttpSecurity httpSecurity) throws Exception {
         return httpSecurity.csrf().disable()
                 .authorizeHttpRequests(auth->auth
-//                        .requestMatchers("/").permitAll()
+                        .requestMatchers("/admin/**").hasAuthority(UserRole.ROLE_ADMIN.name())
                         .requestMatchers("/user/**").hasAuthority(UserRole.ROLE_USER.name())
                         .requestMatchers("/auth/**").permitAll()
                         .anyRequest().authenticated())
@@ -45,7 +45,7 @@ public class SecurityConfig
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return (PasswordEncoder)new BCryptPasswordEncoder();
+        return new BCryptPasswordEncoder();
     }
 
     @Bean

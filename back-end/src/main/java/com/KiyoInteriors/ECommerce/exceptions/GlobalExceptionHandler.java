@@ -1,6 +1,6 @@
 package com.KiyoInteriors.ECommerce.exceptions;
 
-import com.KiyoInteriors.ECommerce.DTO.ErrorDetails;
+import com.KiyoInteriors.ECommerce.DTO.Response.ErrorDetails;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;

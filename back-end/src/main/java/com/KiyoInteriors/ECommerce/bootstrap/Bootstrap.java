@@ -16,7 +16,7 @@ public class Bootstrap implements CommandLineRunner
     private final PasswordEncoder passwordEncoder;
 
     public void run(final String... args) throws Exception {
-        if (this.userRepository.findAll().size() == 0L) {
+        if (userRepository.findAll().size() == 0L) {
             User user = new User();
             user.setUsername("admin");
             user.setName("admin");

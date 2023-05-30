@@ -2,10 +2,11 @@ package com.KiyoInteriors.ECommerce.service;
 
 import java.io.IOException;
 
+import com.KiyoInteriors.ECommerce.entity.Image;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import com.KiyoInteriors.ECommerce.entity.User;
-import com.KiyoInteriors.ECommerce.DTO.UserDTO;
+import com.KiyoInteriors.ECommerce.DTO.Request.UserDTO;
 import com.KiyoInteriors.ECommerce.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +23,11 @@ public class UserService
         user.setName(userDTO.getName());
         user.setMobile(userDTO.getMobile());
         user.setAddresses(userDTO.getAddresses());
-        user.setPhoto(userDTO.getPhoto().getBytes());
+        Image image = Image.builder()
+                .data(userDTO.getPhoto().getBytes())
+                .fileName(userDTO.getPhoto().getOriginalFilename())
+                .build();
+        user.setPhoto(image);
         userRepository.save(user);
     }
 

@@ -1,4 +1,4 @@
-package com.KiyoInteriors.ECommerce.DTO;
+package com.KiyoInteriors.ECommerce.DTO.Request;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;

@@ -26,7 +26,7 @@ public class User {
     private String password;
     private String mobile;
     private List<String> addresses;
-    private byte[] photo;
+    private Image photo ;
     @Indexed(unique = true)
     private String email;
     private UserRole role;

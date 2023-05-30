@@ -1,18 +1,15 @@
 package com.KiyoInteriors.ECommerce.controller;
 
-import com.KiyoInteriors.ECommerce.DTO.MiscResponse;
+import com.KiyoInteriors.ECommerce.DTO.Response.MiscResponse;
 import com.KiyoInteriors.ECommerce.exceptions.UserNotFoundException;
 import com.KiyoInteriors.ECommerce.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.http.HttpStatus;
 import jakarta.validation.Valid;
-import com.KiyoInteriors.ECommerce.DTO.UserDTO;
+import com.KiyoInteriors.ECommerce.DTO.Request.UserDTO;
 import com.KiyoInteriors.ECommerce.entity.User;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import com.KiyoInteriors.ECommerce.service.UserService;
 
 import java.io.IOException;

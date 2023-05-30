@@ -1,6 +1,7 @@
 package com.KiyoInteriors.ECommerce.service;
 
-import com.KiyoInteriors.ECommerce.DTO.ChangePasswordDTO;
+import com.KiyoInteriors.ECommerce.DTO.Request.ChangePasswordDTO;
+import com.KiyoInteriors.ECommerce.entity.Image;
 import com.KiyoInteriors.ECommerce.exceptions.ConstraintException;
 import com.KiyoInteriors.ECommerce.exceptions.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -8,15 +9,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import com.KiyoInteriors.ECommerce.DTO.AuthenticationResponse;
-import com.KiyoInteriors.ECommerce.DTO.AuthenticationRequest;
+import com.KiyoInteriors.ECommerce.DTO.Response.AuthenticationResponse;
+import com.KiyoInteriors.ECommerce.DTO.Request.AuthenticationRequest;
 import java.io.IOException;
-import java.util.List;
 import java.util.Optional;
 
 import com.KiyoInteriors.ECommerce.entity.UserRole;
 import com.KiyoInteriors.ECommerce.entity.User;
-import com.KiyoInteriors.ECommerce.DTO.UserDTO;
+import com.KiyoInteriors.ECommerce.DTO.Request.UserDTO;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import com.KiyoInteriors.ECommerce.security.JWTTokenProvider;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -44,7 +44,11 @@ public class AuthenticationService
         user.setName(userDTO.getName());
         user.setMobile(userDTO.getMobile());
         user.setAddresses(userDTO.getAddresses());
-        user.setPhoto(userDTO.getPhoto().getBytes());
+        Image image = Image.builder()
+                .data(userDTO.getPhoto().getBytes())
+                .fileName(userDTO.getPhoto().getOriginalFilename())
+                .build();
+        user.setPhoto(image);
         user.setRole(UserRole.ROLE_USER);
         userRepository.save(user);
     }

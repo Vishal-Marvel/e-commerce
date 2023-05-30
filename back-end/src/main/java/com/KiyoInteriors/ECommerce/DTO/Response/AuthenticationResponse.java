@@ -1,4 +1,4 @@
-package com.KiyoInteriors.ECommerce.DTO;
+package com.KiyoInteriors.ECommerce.DTO.Response;
 
 import lombok.Builder;
 import lombok.Data;

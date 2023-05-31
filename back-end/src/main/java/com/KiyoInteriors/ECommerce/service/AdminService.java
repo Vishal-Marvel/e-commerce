@@ -43,7 +43,6 @@ public class AdminService {
 
     public void addProduct(ProductRequest productRequest) throws IOException {
         Product newProduct = new Product();
-        System.out.println("newProduct = " + newProduct);
         newProduct.setCategory(categoryRepository
                 .findByCategory(productRequest
                         .getCategory())

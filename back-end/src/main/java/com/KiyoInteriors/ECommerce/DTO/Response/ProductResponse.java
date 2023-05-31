@@ -2,7 +2,6 @@ package com.KiyoInteriors.ECommerce.DTO.Response;
 
 import com.KiyoInteriors.ECommerce.entity.Image;
 import com.KiyoInteriors.ECommerce.entity.Product;
-import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 import java.util.List;

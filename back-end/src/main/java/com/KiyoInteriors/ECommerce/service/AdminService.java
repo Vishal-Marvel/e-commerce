@@ -56,6 +56,7 @@ public class AdminService {
                 Image image = Image.builder()
                         .data(file.getBytes())
                         .fileName(file.getOriginalFilename())
+                        .contentType(file.getContentType())
                         .build();
                 images.add(image);
             }
@@ -80,6 +81,7 @@ public class AdminService {
                 Image image = Image.builder()
                         .data(file.getBytes())
                         .fileName(file.getOriginalFilename())
+                        .contentType(file.getContentType())
                         .build();
                 images.add(image);
             }

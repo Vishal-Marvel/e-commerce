@@ -10,8 +10,6 @@ import com.KiyoInteriors.ECommerce.entity.User;
 import com.KiyoInteriors.ECommerce.DTO.Request.UserRequest;
 import com.KiyoInteriors.ECommerce.repository.UserRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.mock.web.MockMultipartFile;
 
 
 @Service

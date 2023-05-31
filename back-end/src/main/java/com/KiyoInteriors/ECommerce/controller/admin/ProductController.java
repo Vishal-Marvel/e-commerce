@@ -23,7 +23,6 @@ public class ProductController {
     private final ProductRepository productRepository;
     @PostMapping
     public ResponseEntity<MiscResponse> addProduct(@Valid @ModelAttribute ProductRequest productRequest) throws IOException {
-        System.out.println("productRequest = " + productRequest);
         service.addProduct(productRequest);
         return ResponseEntity.ok(MiscResponse.builder().response("Product Added").build());
     }

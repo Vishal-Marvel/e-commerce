@@ -1,9 +1,11 @@
 package com.KiyoInteriors.ECommerce.service;
 
 import com.KiyoInteriors.ECommerce.DTO.Request.ChangePasswordDTO;
+import com.KiyoInteriors.ECommerce.entity.Cart;
 import com.KiyoInteriors.ECommerce.entity.Image;
 import com.KiyoInteriors.ECommerce.exceptions.ConstraintException;
 import com.KiyoInteriors.ECommerce.exceptions.UserNotFoundException;
+import com.KiyoInteriors.ECommerce.repository.CartRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -31,6 +33,7 @@ public class AuthenticationService
     private final AuthenticationManager authenticationManager;
     private final JWTTokenProvider jwtTokenProvider;
     private final PasswordEncoder passwordEncoder;
+    private final CartRepository cartRepository;
 
     public void register(final UserDTO userDTO) throws IOException {
         Optional<User> optionalUser = userRepository.findUserByUsernameOrEmail(userDTO.getUsername(), userDTO.getEmail());
@@ -51,6 +54,8 @@ public class AuthenticationService
         user.setPhoto(image);
         user.setRole(UserRole.ROLE_USER);
         userRepository.save(user);
+        Cart cart = new Cart(user);
+        cartRepository.save(cart);
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest loginDTO) {
@@ -60,7 +65,11 @@ public class AuthenticationService
                 loginDTO.getUsernameOrEmail(), loginDTO.getUsernameOrEmail())
                 .orElseThrow(() -> new UsernameNotFoundException("User Not found"));
         SecurityContextHolder.getContext().setAuthentication(auth);
-        return AuthenticationResponse.builder().token(jwtTokenProvider.generateToken(auth)).role(user.getRole().name()).build();
+        return AuthenticationResponse.builder()
+                .token(jwtTokenProvider
+                        .generateToken(auth))
+                .role(user.getRole().name())
+                .build();
     }
 
     public void changePassword(ChangePasswordDTO changePasswordDTO){

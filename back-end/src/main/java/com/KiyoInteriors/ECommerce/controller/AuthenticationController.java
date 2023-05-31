@@ -29,7 +29,6 @@ public class AuthenticationController
 
     @PostMapping( "/register" )
     public ResponseEntity<MiscResponse> register(@Valid @ModelAttribute UserDTO userDTO) throws IOException {
-
         authService.register(userDTO);
         return ResponseEntity.ok(MiscResponse.builder().response("User Registered").build());
 

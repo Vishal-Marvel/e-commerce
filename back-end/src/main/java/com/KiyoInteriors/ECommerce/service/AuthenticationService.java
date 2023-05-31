@@ -18,7 +18,7 @@ import java.util.Optional;
 
 import com.KiyoInteriors.ECommerce.entity.UserRole;
 import com.KiyoInteriors.ECommerce.entity.User;
-import com.KiyoInteriors.ECommerce.DTO.Request.UserDTO;
+import com.KiyoInteriors.ECommerce.DTO.Request.UserRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import com.KiyoInteriors.ECommerce.security.JWTTokenProvider;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -35,7 +35,7 @@ public class AuthenticationService
     private final PasswordEncoder passwordEncoder;
     private final CartRepository cartRepository;
 
-    public void register(final UserDTO userDTO) throws IOException {
+    public void register(final UserRequest userDTO) throws IOException {
         Optional<User> optionalUser = userRepository.findUserByUsernameOrEmail(userDTO.getUsername(), userDTO.getEmail());
         if (optionalUser.isPresent()){
             throw new ConstraintException("User Name or Email Already Exists");

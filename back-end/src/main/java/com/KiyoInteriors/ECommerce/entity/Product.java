@@ -15,6 +15,7 @@ public class Product {
     private String productName;
     private String productDescription;
     private Double productPrize;
+    private List<ProductSize> sizes;
     private Category category;
     private List<Image> productPics;
 

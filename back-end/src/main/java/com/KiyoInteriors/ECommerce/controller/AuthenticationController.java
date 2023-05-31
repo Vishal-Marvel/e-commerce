@@ -2,7 +2,7 @@ package com.KiyoInteriors.ECommerce.controller;
 
 import com.KiyoInteriors.ECommerce.DTO.Request.AuthenticationRequest;
 import com.KiyoInteriors.ECommerce.DTO.Request.ChangePasswordDTO;
-import com.KiyoInteriors.ECommerce.DTO.Request.UserDTO;
+import com.KiyoInteriors.ECommerce.DTO.Request.UserRequest;
 import com.KiyoInteriors.ECommerce.DTO.Response.AuthenticationResponse;
 import com.KiyoInteriors.ECommerce.DTO.Response.MiscResponse;
 import com.KiyoInteriors.ECommerce.entity.User;
@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 import jakarta.validation.Valid;
 import com.KiyoInteriors.ECommerce.service.AuthenticationService;
-import com.KiyoInteriors.ECommerce.service.UserService;
 
 import java.io.IOException;
 
@@ -28,7 +27,7 @@ public class AuthenticationController
     private final AuthenticationService authService;
 
     @PostMapping( "/register" )
-    public ResponseEntity<MiscResponse> register(@Valid @ModelAttribute UserDTO userDTO) throws IOException {
+    public ResponseEntity<MiscResponse> register(@Valid @ModelAttribute UserRequest userDTO) throws IOException {
         authService.register(userDTO);
         return ResponseEntity.ok(MiscResponse.builder().response("User Registered").build());
 

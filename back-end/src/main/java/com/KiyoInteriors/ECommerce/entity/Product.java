@@ -16,6 +16,8 @@ public class Product {
     private String productDescription;
     private Double productPrize;
     private List<ProductSize> sizes;
+    private List<String> colors;
+    private String model;
     private Category category;
     private List<Image> productPics;
 

@@ -1,6 +1,7 @@
 package com.KiyoInteriors.ECommerce.controller;
 
 import com.KiyoInteriors.ECommerce.DTO.Request.AddCartRequest;
+import com.KiyoInteriors.ECommerce.DTO.Request.UpdateCartRequest;
 import com.KiyoInteriors.ECommerce.DTO.Response.CartProductsResponse;
 import com.KiyoInteriors.ECommerce.DTO.Response.MiscResponse;
 import com.KiyoInteriors.ECommerce.DTO.Response.UserResponse;
@@ -77,21 +78,33 @@ public class UserController
         String name = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findUserByUsername(name)
                 .orElseThrow(()->new UserNotFoundException("User not Found"));
-        cartService.updateCart(user, cartRequest);
+        cartService.addItemToCart(user, cartRequest);
         return ResponseEntity.ok(
                 MiscResponse.builder()
                         .response("Product Added To Cart")
                         .build()
         );
-
     }
 
-    @DeleteMapping("/cart/{productId}")
-    public ResponseEntity<MiscResponse> deleteProductInCart(@PathVariable String productId){
+    @PutMapping("/cart")
+    public ResponseEntity<MiscResponse> updateItem(@RequestBody UpdateCartRequest cartRequest){
         String name = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findUserByUsername(name)
                 .orElseThrow(()->new UserNotFoundException("User not Found"));
-        cartService.deleteItemFromCart(user, productId);
+        cartService.updateProduct(user, cartRequest);
+        return ResponseEntity.ok(
+                MiscResponse.builder()
+                        .response("Product Updated in Cart")
+                        .build()
+        );
+    }
+
+    @DeleteMapping("/cart/{itemId}")
+    public ResponseEntity<MiscResponse> deleteProductInCart(@PathVariable String itemId){
+        String name = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findUserByUsername(name)
+                .orElseThrow(()->new UserNotFoundException("User not Found"));
+        cartService.deleteItemFromCart(user, itemId);
         return ResponseEntity.ok(
                 MiscResponse.builder()
                         .response("Product Deleted In Cart")

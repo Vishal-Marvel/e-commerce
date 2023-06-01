@@ -17,4 +17,7 @@ public class ProductRequest {
     @NotBlank(message = "Category is necessary")
     private String category;
     private List<MultipartFile> productPics;
+    private String model;
+    private List<String> sizes;
+    private List<String> colors;
 }

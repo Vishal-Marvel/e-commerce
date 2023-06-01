@@ -1,6 +1,7 @@
 package com.KiyoInteriors.ECommerce.service;
 
 import com.KiyoInteriors.ECommerce.DTO.Request.AddCartRequest;
+import com.KiyoInteriors.ECommerce.DTO.Request.UpdateCartRequest;
 import com.KiyoInteriors.ECommerce.DTO.Response.CartProductsResponse;
 import com.KiyoInteriors.ECommerce.entity.*;
 import com.KiyoInteriors.ECommerce.exceptions.ItemNotFoundException;
@@ -11,7 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.UUID;
 
 
 @Service
@@ -20,27 +21,73 @@ public class CartService {
     private final CartRepository cartRepository;
     private final ProductRepository productRepository;
 
-    public void updateCart(User user, AddCartRequest request) {
+    public void addItemToCart(User user, AddCartRequest request) {
         Cart cart = cartRepository.findCartByUser(user)
                 .orElseThrow(() -> new ItemNotFoundException("Cart Not Found"));
         Product product = productRepository.findById(request.getProductId())
-                .orElseThrow(()-> new ItemNotFoundException("Cart Not Found"));
-        Map<String, SizeQuantity> products = cart.getCartItem();
+                .orElseThrow(()-> new ItemNotFoundException("Product Not Found"));
+        for (CartItem item : cart.getCartItem().values()) {
+            if (item.getProductId().equals(request.getProductId())) {
+                if (item.getColor() != null && item.getSize() != null) {
+                    if (item.getColor().equals(request.getColor()) && item.getSize().equals(request.getSize())) {
+                        item.setQuantity(item.getQuantity() + 1);
+                        cartRepository.save(cart);
+                        return;
+                    }
+                } else if (item.getColor() != null) {
+                    if (item.getColor().equals(request.getColor())) {
+                        item.setQuantity(item.getQuantity() + 1);
+                        cartRepository.save(cart);
+                        return;
+                    }
+                } else if (item.getSize() != null) {
+                    if (item.getSize().equals(request.getSize())) {
+                        item.setQuantity(item.getQuantity() + 1);
+                        cartRepository.save(cart);
+                        return;
+                    }
+                }
 
-        SizeQuantity sizeQuantity =  SizeQuantity.builder()
-                .size(ProductSize.valueOf(request.getSize()))
-                .quantity(request.getQuantity())
+            }
+
+        }
+        CartItem cartItemParameter =  CartItem.builder()
+                .productId(product.getId())
+                .id(UUID.randomUUID().toString())
+                .size(request.getSize())
+                .color(request.getColor())
                 .build();
-        products.put(request.getProductId(), sizeQuantity);
+        if (request.getQuantity()!=null){
+            cartItemParameter.setQuantity(request.getQuantity());
+        }else{
+            cartItemParameter.setQuantity(1);
+        }
+        cart.getCartItem().put(cartItemParameter.getId(), cartItemParameter);
         cartRepository.save(cart);
     }
 
-    public void deleteItemFromCart(User user, String productId){
+    public void updateProduct(User user, UpdateCartRequest request) {
         Cart cart = cartRepository.findCartByUser(user)
                 .orElseThrow(() -> new ItemNotFoundException("Cart Not Found"));
-        Product product = productRepository.findById(productId)
-                .orElseThrow(()-> new ItemNotFoundException("Cart Not Found"));
-        cart.getCartItem().remove(productId);
+        if (!cart.getCartItem().containsKey(request.getItemId())){
+            throw new ItemNotFoundException("Item Not Found");
+        }
+        CartItem item = cart.getCartItem().get(request.getItemId());
+        item.setColor(request.getColor());
+        if (request.getQuantity()!=null) {
+            item.setQuantity(request.getQuantity());
+        }else{
+            item.setQuantity(1);
+        }
+        item.setSize(request.getSize());
+        cartRepository.save(cart);
+    }
+
+    public void deleteItemFromCart(User user, String orderId){
+        Cart cart = cartRepository.findCartByUser(user)
+                .orElseThrow(() -> new ItemNotFoundException("Cart Not Found"));
+
+        cart.getCartItem().remove(orderId);
         cartRepository.save(cart);
 
     }
@@ -49,16 +96,17 @@ public class CartService {
         Cart cart = cartRepository.findCartByUser(user)
                 .orElseThrow(()-> new ItemNotFoundException("Cart Not Found"));
         List<CartProductsResponse> cartProductsResponseList = new ArrayList<>();
-        for(String productId: cart.getCartItem().keySet()){
-            Product product = productRepository.findById(productId)
-                    .orElseThrow(()-> new ItemNotFoundException("Cart Not Found"));
+        for(CartItem cartItem : cart.getCartItem().values()){
+            Product product = productRepository.findById(cartItem.getProductId())
+                    .orElseThrow(()-> new ItemNotFoundException("Product Not Found"));
             cartProductsResponseList.add(CartProductsResponse.builder()
-                    .id(product.getId())
+                    .itemId(cartItem.getId())
                     .name(product.getProductName())
                     .prize(product.getProductPrize())
                     .image(product.getProductPics().get(0))
-                    .quantity(cart.getCartItem().get(productId).getQuantity())
-                    .size(cart.getCartItem().get(productId).getSize().toString())
+                    .color(cartItem.getColor())
+                    .quantity(cartItem.getQuantity())
+                    .size(cartItem.getSize())
                     .build());
         }
         return cartProductsResponseList;

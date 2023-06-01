@@ -39,6 +39,7 @@ public class AuthenticationController
     }
 
     @PostMapping("/changePassword")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
     public ResponseEntity<MiscResponse> changePassword(@Valid @RequestBody ChangePasswordDTO changePasswordDTO){
         authService.changePassword(changePasswordDTO);
         return ResponseEntity.ok(MiscResponse.builder()

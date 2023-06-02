@@ -21,6 +21,11 @@ import org.springframework.context.annotation.Configuration;
 @EnableMethodSecurity
 @EnableWebSecurity
 @RequiredArgsConstructor
+/**
+ * This class provides the security configuration for the application.
+ * It defines the authentication and authorization rules for different endpoints and roles.
+ * It also configures the password encoder, the authentication manager, and the JWT filter and entry point.
+ */
 public class SecurityConfig
 {
     private final JWTAuthFilter authFilter;

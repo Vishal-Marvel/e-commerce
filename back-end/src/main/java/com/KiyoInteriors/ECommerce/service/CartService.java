@@ -13,7 +13,12 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+/**
 
+The "CartService" class is responsible for managing the user's cart, including adding items, updating quantities and attributes, deleting items, and displaying the cart.
+It interacts with the "CartRepository" and "ProductRepository" to perform these operations.
+addItemToCart(User user, AddCartRequest request): Adds an item to the user's cart.
+*/
 
 @Service
 @RequiredArgsConstructor

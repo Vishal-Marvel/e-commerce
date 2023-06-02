@@ -9,6 +9,7 @@ import com.KiyoInteriors.ECommerce.exceptions.UserNotFoundException;
 import com.KiyoInteriors.ECommerce.repository.CartRepository;
 import com.KiyoInteriors.ECommerce.repository.UserRepository;
 import com.KiyoInteriors.ECommerce.service.CartService;
+import com.KiyoInteriors.ECommerce.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -31,6 +32,7 @@ public class UserController
     private final UserRepository userRepository;
     private final CartService cartService;
     private final CartRepository cartRepository;
+    private final OrderService orderService;
 
     @GetMapping
     public ResponseEntity<UserResponse> getUser() {
@@ -110,5 +112,14 @@ public class UserController
                         .response("Product Deleted In Cart")
                         .build()
         );
+    }
+
+    @PostMapping("/order")
+    public ResponseEntity<MiscResponse> createOrder(@RequestBody OrderRequest request){
+        String name = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findUserByUsername(name)
+                .orElseThrow(()->new UserNotFoundException("User not Found"));
+        orderService.createOrder(user, request);
+        return ResponseEntity.ok(MiscResponse.builder().response("Order Created").build());
     }
 }

@@ -1,5 +1,6 @@
 package com.KiyoInteriors.ECommerce.entity;
 
+import java.util.Date;
 import java.util.UUID;
 import java.util.Arrays;
 import java.util.List;
@@ -31,5 +32,6 @@ public class User {
     @Indexed(unique = true)
     private String email;
     private UserRole role;
+    private Date lastLoggedIn;
 
 }

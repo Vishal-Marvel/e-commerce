@@ -13,7 +13,7 @@ import java.util.UUID;
 public class Order {
     @Id
     private String id = UUID.randomUUID().toString();
-    private User user;
+    private String userId;
     private Date orderDate;
     private String shippingAddress;
     private String billingAddress;

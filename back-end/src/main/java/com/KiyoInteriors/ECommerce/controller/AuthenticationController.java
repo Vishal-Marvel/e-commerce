@@ -46,6 +46,7 @@ public class AuthenticationController
                 .response("Password Changed").build());
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
     @PostMapping({ "/logout" })
     public ResponseEntity<MiscResponse> logout() {
         authService.logout();

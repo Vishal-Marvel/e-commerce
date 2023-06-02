@@ -14,6 +14,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import com.KiyoInteriors.ECommerce.DTO.Response.AuthenticationResponse;
 import com.KiyoInteriors.ECommerce.DTO.Request.AuthenticationRequest;
 import java.io.IOException;
+import java.util.Date;
 import java.util.Optional;
 
 import com.KiyoInteriors.ECommerce.entity.UserRole;
@@ -65,6 +66,8 @@ public class AuthenticationService
                 loginDTO.getUsernameOrEmail(), loginDTO.getUsernameOrEmail())
                 .orElseThrow(() -> new UsernameNotFoundException("User Not found"));
         SecurityContextHolder.getContext().setAuthentication(auth);
+        user.setLastLoggedIn(new Date());
+        userRepository.save(user);
         return AuthenticationResponse.builder()
                 .token(jwtTokenProvider
                         .generateToken(auth))

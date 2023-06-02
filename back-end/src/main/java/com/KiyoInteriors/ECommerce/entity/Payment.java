@@ -6,7 +6,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
 import java.util.UUID;
-
+/**
+ * This class represents a payment entity that stores the details of a payment made by a customer for an order.
+ */
 @Data
 @Document
 public class Payment {

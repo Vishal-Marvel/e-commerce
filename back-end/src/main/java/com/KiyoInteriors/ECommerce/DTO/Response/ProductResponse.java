@@ -6,7 +6,10 @@ import com.KiyoInteriors.ECommerce.entity.ReviewRating;
 import lombok.Data;
 
 import java.util.List;
-
+/**
+ * A class that represents a product response object.
+ * It contains the fields and constructor of a product entity.
+ */
 @Data
 public class ProductResponse {
     private String id;
@@ -18,7 +21,6 @@ public class ProductResponse {
     private String model;
     private List<String> sizes;
     private List<String> colors;
-    private List<ReviewRating> reviewRatingMap;
 
     public ProductResponse(Product product) {
         this.id = product.getId();

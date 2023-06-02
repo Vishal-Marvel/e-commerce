@@ -19,6 +19,26 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @NoArgsConstructor
 @AllArgsConstructor
 @Document(collection = "user_table")
+/**
+
+This class represents a User entity in the system.
+
+It contains various properties that define the attributes and characteristics of a user.
+
+The properties include id, username, name, password, mobile, addresses, photo, email, and role.
+
+The id field is a unique identifier generated using UUID.
+
+The username field is used as a unique identifier for the user and must be unique across the system.
+
+The email field is also used as a unique identifier for the user and must be unique across the system.
+
+The addresses field stores a list of addresses associated with the user.
+
+The photo field represents an image associated with the user.
+
+The role field represents the role or privileges assigned to the user.
+*/
 public class User {
     @Id
     private String id = UUID.randomUUID().toString();

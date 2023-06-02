@@ -12,7 +12,13 @@ import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.util.Date;
+/**
 
+The "JWTTokenProvider" class is responsible for generating, validating, and parsing JSON Web Tokens (JWT) in a web application.
+It utilizes the "io.jsonwebtoken" library for JWT processing.
+The class uses a secret key, expiration time, and various methods to handle token-related operations.
+generateToken(Authentication authentication): Generates a JWT token based on the provided authentication object.
+*/
 @Component
 public class JWTTokenProvider {
      @Value("${KEY}")

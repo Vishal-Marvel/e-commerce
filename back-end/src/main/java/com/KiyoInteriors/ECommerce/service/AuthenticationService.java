@@ -25,7 +25,14 @@ import com.KiyoInteriors.ECommerce.security.JWTTokenProvider;
 import org.springframework.security.authentication.AuthenticationManager;
 import com.KiyoInteriors.ECommerce.repository.UserRepository;
 import org.springframework.stereotype.Service;
+/**
 
+The "AuthenticationService" class is responsible for user authentication, registration, password change, and logout operations.
+
+It interacts with the "UserRepository", "AuthenticationManager", "JWTTokenProvider", "PasswordEncoder", and "CartRepository" to perform these operations.
+
+register(UserRequest userDTO): Registers a new user based on the provided user request.
+*/
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService

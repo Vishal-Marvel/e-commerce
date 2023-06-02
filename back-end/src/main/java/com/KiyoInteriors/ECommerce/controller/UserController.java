@@ -25,6 +25,22 @@ import java.util.Optional;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping({ "/user" })
+/**
+ * A controller class that handles requests related to user and cart operations.
+ * It uses the UserService, UserRepository, CartService and CartRepository classes
+ * to perform the business logic and data access operations.
+ * It also uses the SecurityContextHolder class to get the authenticated user name.
+ * A method that returns the user information as a UserResponse object.
+ * It uses the userRepository to find the user by username and the userService
+ * to convert the user entity to a response object.\
+ * A method that updates the user information with the given UserRequest object.
+ * It uses the userRepository to find the user by username and the userService
+ * to update the user entity with the given request object.
+ * @param userDTO a UserRequest object that contains the updated user information.
+ * @return a ResponseEntity object with a MiscResponse object as the body and OK status code.
+ * @throws UserNotFoundException if the user does not exist in the database.
+ * @throws IOException if there is an error in reading or writing the user image file.
+ */
 public class UserController
 {
     private final UserService userService;

@@ -16,6 +16,10 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/admin/category")
+/**
+ * This class is responsible for managing categories of products.
+ * It provides methods to add, update and delete categories using a repository and a service layer.
+ */
 public class CategoryController {
     private final CategoryRepository categoryRepository;
     private final AdminService service;

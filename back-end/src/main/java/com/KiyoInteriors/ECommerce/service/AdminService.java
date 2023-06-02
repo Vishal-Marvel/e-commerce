@@ -5,7 +5,6 @@ import com.KiyoInteriors.ECommerce.DTO.Request.ProductRequest;
 import com.KiyoInteriors.ECommerce.entity.Category;
 import com.KiyoInteriors.ECommerce.entity.Image;
 import com.KiyoInteriors.ECommerce.entity.Product;
-import com.KiyoInteriors.ECommerce.entity.ProductSize;
 import com.KiyoInteriors.ECommerce.exceptions.ItemNotFoundException;
 import com.KiyoInteriors.ECommerce.exceptions.ConstraintException;
 import com.KiyoInteriors.ECommerce.repository.CategoryRepository;
@@ -52,9 +51,7 @@ public class AdminService {
         newProduct.setProductPrize(productRequest.getProductPrize());
         newProduct.setProductDescription(productRequest.getProductDescription());
         newProduct.setColors(productRequest.getColors());
-        newProduct.setSizes(productRequest.getSizes()
-                .stream().map(ProductSize::valueOf)
-                .toList());
+        newProduct.setSizes(productRequest.getSizes());
         newProduct.setModel(productRequest.getModel());
         if (productRequest.getProductPics()!=null) {
             List<Image> images = new ArrayList<>();
@@ -82,9 +79,7 @@ public class AdminService {
         product.setProductPrize(productRequest.getProductPrize());
         product.setProductDescription(productRequest.getProductDescription());
         product.setColors(productRequest.getColors());
-        product.setSizes(productRequest.getSizes()
-                .stream().map(ProductSize::valueOf)
-                .toList());
+        product.setSizes(productRequest.getSizes());
         product.setModel(productRequest.getModel());
         if (productRequest.getProductPics()!=null) {
             List<Image> images = new ArrayList<>();

@@ -22,7 +22,7 @@ public class CartService {
     private final ProductRepository productRepository;
 
     public void addItemToCart(User user, AddCartRequest request) {
-        Cart cart = cartRepository.findCartByUser(user)
+        Cart cart = cartRepository.findCartByUserId(user.getId())
                 .orElseThrow(() -> new ItemNotFoundException("Cart Not Found"));
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(()-> new ItemNotFoundException("Product Not Found"));
@@ -67,7 +67,7 @@ public class CartService {
     }
 
     public void updateProduct(User user, UpdateCartRequest request) {
-        Cart cart = cartRepository.findCartByUser(user)
+        Cart cart = cartRepository.findCartByUserId(user.getId())
                 .orElseThrow(() -> new ItemNotFoundException("Cart Not Found"));
         if (!cart.getCartItem().containsKey(request.getItemId())){
             throw new ItemNotFoundException("Item Not Found");
@@ -84,7 +84,7 @@ public class CartService {
     }
 
     public void deleteItemFromCart(User user, String orderId){
-        Cart cart = cartRepository.findCartByUser(user)
+        Cart cart = cartRepository.findCartByUserId(user.getId())
                 .orElseThrow(() -> new ItemNotFoundException("Cart Not Found"));
 
         cart.getCartItem().remove(orderId);
@@ -93,7 +93,7 @@ public class CartService {
     }
 
     public List<CartProductsResponse> displayCart(User user) {
-        Cart cart = cartRepository.findCartByUser(user)
+        Cart cart = cartRepository.findCartByUserId(user.getId())
                 .orElseThrow(()-> new ItemNotFoundException("Cart Not Found"));
         List<CartProductsResponse> cartProductsResponseList = new ArrayList<>();
         for(CartItem cartItem : cart.getCartItem().values()){

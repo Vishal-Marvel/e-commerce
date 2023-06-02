@@ -54,7 +54,7 @@ public class AuthenticationService
         user.setPhoto(image);
         user.setRole(UserRole.ROLE_USER);
         userRepository.save(user);
-        Cart cart = new Cart(user);
+        Cart cart = new Cart(user.getId());
         cartRepository.save(cart);
     }
 

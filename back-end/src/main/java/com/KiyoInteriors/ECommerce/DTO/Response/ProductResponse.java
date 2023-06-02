@@ -2,7 +2,6 @@ package com.KiyoInteriors.ECommerce.DTO.Response;
 
 import com.KiyoInteriors.ECommerce.entity.Image;
 import com.KiyoInteriors.ECommerce.entity.Product;
-import com.KiyoInteriors.ECommerce.entity.ProductSize;
 import lombok.Data;
 
 import java.util.List;
@@ -28,9 +27,6 @@ public class ProductResponse {
         this.productPics = product.getProductPics();
         this.model = product.getModel();
         this.colors = product.getColors();
-        this.sizes = product.getSizes()
-                .stream()
-                .map(ProductSize::toString)
-                .toList();
+        this.sizes = product.getSizes();
     }
 }

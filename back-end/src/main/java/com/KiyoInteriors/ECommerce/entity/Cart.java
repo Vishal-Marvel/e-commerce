@@ -11,10 +11,10 @@ import java.util.*;
 public class Cart {
     @Id
     private String id= UUID.randomUUID().toString();
-    private User user;
+    private String userId;
     private Map<String, CartItem> cartItem;
-    public Cart(User user) {
-        this.user = user;
+    public Cart(String id) {
+        this.userId = id;
         this.cartItem = new HashMap<>();
     }
 

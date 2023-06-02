@@ -14,6 +14,12 @@ import com.KiyoInteriors.ECommerce.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
+/**
+
+The "CustomUserDetailsService" class is an implementation of the Spring Security "UserDetailsService" interface.
+It is responsible for loading user details from the database based on the provided username or email during the authentication process.
+loadUserByUsername(String usernameOrEmail): Loads user details from the database based on the provided username or email.
+*/
 @Service
 @RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService

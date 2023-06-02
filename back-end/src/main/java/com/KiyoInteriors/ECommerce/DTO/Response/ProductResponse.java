@@ -21,6 +21,7 @@ public class ProductResponse {
     private String model;
     private List<String> sizes;
     private List<String> colors;
+    private List<ReviewRating> reviewRating;
 
     public ProductResponse(Product product) {
         this.id = product.getId();
@@ -32,6 +33,6 @@ public class ProductResponse {
         this.model = product.getModel();
         this.colors = product.getColors();
         this.sizes = product.getSizes();
-        this.reviewRatingMap = product.getReviewRating().values().stream().toList();
+        this.reviewRating = product.getReviewRating().values().stream().toList();
     }
 }

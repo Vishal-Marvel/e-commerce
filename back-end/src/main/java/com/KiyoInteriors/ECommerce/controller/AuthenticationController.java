@@ -21,6 +21,11 @@ import java.io.IOException;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping( "/auth" )
+/**
+ * This class provides methods for user authentication and authorization.
+ * It uses the UserRepository and AuthenticationService classes to perform
+ * various operations related to user accounts and privileges.
+ */
 public class AuthenticationController
 {
     private final UserRepository userRepository;

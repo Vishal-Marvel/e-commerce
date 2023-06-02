@@ -1,8 +1,6 @@
 package com.KiyoInteriors.ECommerce.controller;
 
-import com.KiyoInteriors.ECommerce.DTO.Request.AddCartRequest;
-import com.KiyoInteriors.ECommerce.DTO.Request.OrderRequest;
-import com.KiyoInteriors.ECommerce.DTO.Request.UpdateCartRequest;
+import com.KiyoInteriors.ECommerce.DTO.Request.*;
 import com.KiyoInteriors.ECommerce.DTO.Response.CartProductsResponse;
 import com.KiyoInteriors.ECommerce.DTO.Response.MiscResponse;
 import com.KiyoInteriors.ECommerce.DTO.Response.UserResponse;
@@ -11,11 +9,11 @@ import com.KiyoInteriors.ECommerce.repository.CartRepository;
 import com.KiyoInteriors.ECommerce.repository.UserRepository;
 import com.KiyoInteriors.ECommerce.service.CartService;
 import com.KiyoInteriors.ECommerce.service.OrderService;
+import com.KiyoInteriors.ECommerce.service.ProductReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
-import com.KiyoInteriors.ECommerce.DTO.Request.UserRequest;
 import com.KiyoInteriors.ECommerce.entity.User;
 import org.springframework.http.ResponseEntity;
 import com.KiyoInteriors.ECommerce.service.UserService;
@@ -34,6 +32,8 @@ public class UserController
     private final CartService cartService;
     private final CartRepository cartRepository;
     private final OrderService orderService;
+    private final ProductReviewService productReviewService;
+
 
     @GetMapping
     public ResponseEntity<UserResponse> getUser() {
@@ -122,5 +122,15 @@ public class UserController
                 .orElseThrow(()->new UserNotFoundException("User not Found"));
         orderService.createOrder(user, request);
         return ResponseEntity.ok(MiscResponse.builder().response("Order Created").build());
+    }
+
+    @PostMapping("/product/review")
+    public ResponseEntity<MiscResponse> giveReview(@RequestBody ReviewRequest review){
+        String name = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findUserByUsername(name)
+                .orElseThrow(()->new UserNotFoundException("User not Found"));
+        return ResponseEntity.ok(MiscResponse.builder().response(productReviewService.giveReviewRating(user, review)).build());
+
+
     }
 }

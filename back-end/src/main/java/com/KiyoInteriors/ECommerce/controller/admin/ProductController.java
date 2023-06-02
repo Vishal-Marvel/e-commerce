@@ -39,9 +39,5 @@ public class ProductController {
         productRepository.delete(product);
         return ResponseEntity.ok(MiscResponse.builder().response("Product Deleted").build());
     }
-    @GetMapping
-    public ResponseEntity<ProductRequest> test(){
-        return ResponseEntity.ok(new ProductRequest());
-    }
 
 }

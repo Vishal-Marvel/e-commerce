@@ -18,6 +18,11 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/admin/product")
+/**
+ * This class is responsible for managing products in the system.
+ * It provides methods for adding, updating and deleting products.
+ * It also has a test method for returning a sample product request.
+ */
 public class ProductController {
     private final AdminService service;
     private final ProductRepository productRepository;

@@ -23,5 +23,7 @@ public class Order {
     private String coupon;
     private OrderStatus orderStatus;
 
-
+    public Order(String userId) {
+        this.userId = userId;
+    }
 }

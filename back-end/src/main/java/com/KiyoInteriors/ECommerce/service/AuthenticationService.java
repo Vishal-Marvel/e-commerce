@@ -14,6 +14,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import com.KiyoInteriors.ECommerce.DTO.Response.AuthenticationResponse;
 import com.KiyoInteriors.ECommerce.DTO.Request.AuthenticationRequest;
 import java.io.IOException;
+import java.util.Date;
 import java.util.Optional;
 
 import com.KiyoInteriors.ECommerce.entity.UserRole;
@@ -24,7 +25,14 @@ import com.KiyoInteriors.ECommerce.security.JWTTokenProvider;
 import org.springframework.security.authentication.AuthenticationManager;
 import com.KiyoInteriors.ECommerce.repository.UserRepository;
 import org.springframework.stereotype.Service;
+/**
 
+The "AuthenticationService" class is responsible for user authentication, registration, password change, and logout operations.
+
+It interacts with the "UserRepository", "AuthenticationManager", "JWTTokenProvider", "PasswordEncoder", and "CartRepository" to perform these operations.
+
+register(UserRequest userDTO): Registers a new user based on the provided user request.
+*/
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService
@@ -54,7 +62,7 @@ public class AuthenticationService
         user.setPhoto(image);
         user.setRole(UserRole.ROLE_USER);
         userRepository.save(user);
-        Cart cart = new Cart(user);
+        Cart cart = new Cart(user.getId());
         cartRepository.save(cart);
     }
 
@@ -65,6 +73,8 @@ public class AuthenticationService
                 loginDTO.getUsernameOrEmail(), loginDTO.getUsernameOrEmail())
                 .orElseThrow(() -> new UsernameNotFoundException("User Not found"));
         SecurityContextHolder.getContext().setAuthentication(auth);
+        user.setLastLoggedIn(new Date());
+        userRepository.save(user);
         return AuthenticationResponse.builder()
                 .token(jwtTokenProvider
                         .generateToken(auth))

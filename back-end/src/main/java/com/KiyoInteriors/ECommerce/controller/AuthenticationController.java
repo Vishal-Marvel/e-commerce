@@ -21,6 +21,11 @@ import java.io.IOException;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping( "/auth" )
+/**
+ * This class provides methods for user authentication and authorization.
+ * It uses the UserRepository and AuthenticationService classes to perform
+ * various operations related to user accounts and privileges.
+ */
 public class AuthenticationController
 {
     private final UserRepository userRepository;
@@ -46,6 +51,7 @@ public class AuthenticationController
                 .response("Password Changed").build());
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     @PostMapping({ "/logout" })
     public ResponseEntity<MiscResponse> logout() {
         authService.logout();

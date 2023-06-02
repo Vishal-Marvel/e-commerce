@@ -18,6 +18,11 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/admin/product")
+/**
+ * This class is responsible for managing products in the system.
+ * It provides methods for adding, updating and deleting products.
+ * It also has a test method for returning a sample product request.
+ */
 public class ProductController {
     private final AdminService service;
     private final ProductRepository productRepository;
@@ -38,10 +43,6 @@ public class ProductController {
         Product product = productRepository.findById(id).orElseThrow(()-> new ItemNotFoundException("Product Not Found"));
         productRepository.delete(product);
         return ResponseEntity.ok(MiscResponse.builder().response("Product Deleted").build());
-    }
-    @GetMapping
-    public ResponseEntity<ProductRequest> test(){
-        return ResponseEntity.ok(new ProductRequest());
     }
 
 }

@@ -1,7 +1,6 @@
 package com.KiyoInteriors.ECommerce.controller;
 
-import com.KiyoInteriors.ECommerce.DTO.Request.AddCartRequest;
-import com.KiyoInteriors.ECommerce.DTO.Request.UpdateCartRequest;
+import com.KiyoInteriors.ECommerce.DTO.Request.*;
 import com.KiyoInteriors.ECommerce.DTO.Response.CartProductsResponse;
 import com.KiyoInteriors.ECommerce.DTO.Response.MiscResponse;
 import com.KiyoInteriors.ECommerce.DTO.Response.UserResponse;
@@ -9,11 +8,12 @@ import com.KiyoInteriors.ECommerce.exceptions.UserNotFoundException;
 import com.KiyoInteriors.ECommerce.repository.CartRepository;
 import com.KiyoInteriors.ECommerce.repository.UserRepository;
 import com.KiyoInteriors.ECommerce.service.CartService;
+import com.KiyoInteriors.ECommerce.service.OrderService;
+import com.KiyoInteriors.ECommerce.service.ProductReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
-import com.KiyoInteriors.ECommerce.DTO.Request.UserRequest;
 import com.KiyoInteriors.ECommerce.entity.User;
 import org.springframework.http.ResponseEntity;
 import com.KiyoInteriors.ECommerce.service.UserService;
@@ -25,12 +25,31 @@ import java.util.Optional;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping({ "/user" })
+/**
+ * A controller class that handles requests related to user and cart operations.
+ * It uses the UserService, UserRepository, CartService and CartRepository classes
+ * to perform the business logic and data access operations.
+ * It also uses the SecurityContextHolder class to get the authenticated user name.
+ * A method that returns the user information as a UserResponse object.
+ * It uses the userRepository to find the user by username and the userService
+ * to convert the user entity to a response object.\
+ * A method that updates the user information with the given UserRequest object.
+ * It uses the userRepository to find the user by username and the userService
+ * to update the user entity with the given request object.
+ * @param userDTO a UserRequest object that contains the updated user information.
+ * @return a ResponseEntity object with a MiscResponse object as the body and OK status code.
+ * @throws UserNotFoundException if the user does not exist in the database.
+ * @throws IOException if there is an error in reading or writing the user image file.
+ */
 public class UserController
 {
     private final UserService userService;
     private final UserRepository userRepository;
     private final CartService cartService;
     private final CartRepository cartRepository;
+    private final OrderService orderService;
+    private final ProductReviewService productReviewService;
+
 
     @GetMapping
     public ResponseEntity<UserResponse> getUser() {
@@ -110,5 +129,24 @@ public class UserController
                         .response("Product Deleted In Cart")
                         .build()
         );
+    }
+
+    @PostMapping("/order")
+    public ResponseEntity<MiscResponse> createOrder(@RequestBody OrderRequest request){
+        String name = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findUserByUsername(name)
+                .orElseThrow(()->new UserNotFoundException("User not Found"));
+        orderService.createOrder(user, request);
+        return ResponseEntity.ok(MiscResponse.builder().response("Order Created").build());
+    }
+
+    @PostMapping("/product/review")
+    public ResponseEntity<MiscResponse> giveReview(@RequestBody ReviewRequest review){
+        String name = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findUserByUsername(name)
+                .orElseThrow(()->new UserNotFoundException("User not Found"));
+        return ResponseEntity.ok(MiscResponse.builder().response(productReviewService.giveReviewRating(user, review)).build());
+
+
     }
 }

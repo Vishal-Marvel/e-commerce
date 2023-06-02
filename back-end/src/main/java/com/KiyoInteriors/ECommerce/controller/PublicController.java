@@ -18,6 +18,11 @@ import java.util.ArrayList;
 import java.util.List;
 @RestController
 @RequiredArgsConstructor
+/**
+ * This class provides methods for accessing and manipulating public data.
+ * It uses the CategoryRepository and ProductRepository interfaces to perform CRUD operations on the database.
+ * It also supports searching products by category, name, or price range.
+ */
 public class PublicController {
     private final CategoryRepository categoryRepository;
     private final ProductRepository productRepository;

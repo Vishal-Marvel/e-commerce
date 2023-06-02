@@ -22,6 +22,7 @@ public class ProductResponse {
     private List<String> sizes;
     private List<String> colors;
     private List<ReviewRating> reviewRating;
+    private Double rating;
 
     public ProductResponse(Product product) {
         this.id = product.getId();
@@ -34,5 +35,6 @@ public class ProductResponse {
         this.colors = product.getColors();
         this.sizes = product.getSizes();
         this.reviewRating = product.getReviewRating().values().stream().toList();
+        this.rating = product.getRating();
     }
 }

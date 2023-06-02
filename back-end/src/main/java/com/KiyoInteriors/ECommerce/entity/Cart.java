@@ -5,7 +5,10 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.*;
-
+/**
+ * This class represents a shopping cart that contains items and belongs to a user.
+ * It has a unique id, a user object, and a map of cart items keyed by their ids.
+ */
 @Data
 @Document
 public class Cart {

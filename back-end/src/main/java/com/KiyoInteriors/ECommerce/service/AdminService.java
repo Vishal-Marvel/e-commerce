@@ -18,7 +18,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+/**
 
+The "AdminService" class is responsible for handling administrative operations related to categories and products.
+
+It interacts with the "CategoryRepository" and "ProductRepository" to perform CRUD operations on categories and products.
+
+addCategory(CategoryRequest request): Adds a new category based on the provided category request.
+*/
 @RequiredArgsConstructor
 @Service
 public class AdminService {

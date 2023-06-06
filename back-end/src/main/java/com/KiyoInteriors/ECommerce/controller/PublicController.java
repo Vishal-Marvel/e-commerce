@@ -2,13 +2,19 @@ package com.KiyoInteriors.ECommerce.controller;
 
 import com.KiyoInteriors.ECommerce.DTO.Response.CategoryResponse;
 import com.KiyoInteriors.ECommerce.DTO.Response.ProductResponse;
-import com.KiyoInteriors.ECommerce.entity.Category;
-import com.KiyoInteriors.ECommerce.entity.Product;
+import com.KiyoInteriors.ECommerce.entity.*;
 import com.KiyoInteriors.ECommerce.exceptions.ItemNotFoundException;
+import com.KiyoInteriors.ECommerce.exceptions.UserNotFoundException;
 import com.KiyoInteriors.ECommerce.repository.CategoryRepository;
+import com.KiyoInteriors.ECommerce.repository.OrderRepository;
 import com.KiyoInteriors.ECommerce.repository.ProductRepository;
+import com.KiyoInteriors.ECommerce.repository.UserRepository;
+import com.KiyoInteriors.ECommerce.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -26,6 +32,9 @@ import java.util.List;
 public class PublicController {
     private final CategoryRepository categoryRepository;
     private final ProductRepository productRepository;
+    private final OrderRepository orderRepository;
+    private final UserRepository userRepository;
+    private final OrderService orderService;
 
     @GetMapping("/category")
     public ResponseEntity<List<CategoryResponse>> categories(){
@@ -69,8 +78,8 @@ public class PublicController {
     public ResponseEntity<List<ProductResponse>> searchProducts(
             @RequestParam(value = "category",required = false) String category,
             @RequestParam(value = "name",required = false) String name,
-            @RequestParam(value = "prizeFrom", required = false) Double prizeFrom,
-            @RequestParam(value = "prizeTo", required = false) Double prizeTo){
+            @RequestParam(value = "priceFrom", required = false) Double priceFrom,
+            @RequestParam(value = "priceTo", required = false) Double priceTo){
         List<ProductResponse> productResponses = new ArrayList<>();
 
         if (category!=null && name != null) {
@@ -93,13 +102,27 @@ public class PublicController {
                     ).stream()
                     .map(ProductResponse::new)
                     .toList();
-        } else if (prizeFrom!=null && prizeTo !=null) {
-            productResponses = productRepository.findProductsByProductPrizeBetween(prizeFrom-0.001, prizeTo+0.001)
+        } else if (priceFrom!=null && priceTo !=null) {
+            productResponses = productRepository.findProductsByProductPriceBetween(priceFrom-0.001, priceTo+0.001)
                     .stream()
                     .map(ProductResponse::new)
                     .toList();
         }
         return ResponseEntity.ok(productResponses);
                 
+    }
+    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
+    @GetMapping("/order/{id}")
+    public ResponseEntity<String> orderDetails(@PathVariable String id){
+        String name = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findUserByUsername(name)
+                .orElseThrow(() -> new UserNotFoundException("User Not Found"));
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new ItemNotFoundException("Order Not Found"));
+        if (user.getRole() == UserRole.ROLE_ADMIN || user.getId().equals(order.getUserId()))
+            return ResponseEntity.ok(id);
+        else{
+            throw new AccessDeniedException("You Dont Have Access");
+        }
     }
 }

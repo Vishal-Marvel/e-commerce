@@ -3,7 +3,6 @@ package com.KiyoInteriors.ECommerce.service;
 import com.KiyoInteriors.ECommerce.DTO.Request.OrderRequest;
 import com.KiyoInteriors.ECommerce.DTO.Request.UpdateOrderRequest;
 import com.KiyoInteriors.ECommerce.DTO.Response.CartProductsResponse;
-import com.KiyoInteriors.ECommerce.DTO.Response.OrderResponse;
 import com.KiyoInteriors.ECommerce.DTO.Response.OrderResponses;
 import com.KiyoInteriors.ECommerce.entity.*;
 import com.KiyoInteriors.ECommerce.exceptions.ItemNotFoundException;
@@ -62,10 +61,16 @@ public class OrderService {
                             .size(cartItem.getSize())
                             .color(cartItem.getColor())
                             .build();
-
-
                 })
                 .toList());
+        order.setTotal(request.getItems().stream()
+                        .mapToDouble(id->{
+                            CartItem cartItem = cart.getCartItem().get(id);
+                            Product product = productRepository.findById(cartItem.getProductId())
+                                    .orElseThrow(() -> new ItemNotFoundException("Product Not Found"));
+                            return product.getProductPrice();
+                        })
+                        .sum());
         orderRepository.save(order);
     }
 
@@ -76,7 +81,7 @@ public class OrderService {
         orderRepository.save(order);
     }
 
-    public List<OrderResponses> displayAllOrder() {
+    public List<OrderResponses>     displayAllOrder() {
         List<Order> orders = orderRepository.findAll();
         return orders.stream()
                 .map(order -> {

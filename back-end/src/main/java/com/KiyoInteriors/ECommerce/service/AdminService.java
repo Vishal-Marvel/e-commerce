@@ -55,7 +55,7 @@ public class AdminService {
                         .getCategory())
                 .orElseThrow(()->new ItemNotFoundException("Category Not Found")));
         newProduct.setProductName(productRequest.getProductName());
-        newProduct.setProductPrice(productRequest.getProductPrize());
+        newProduct.setProductPrice(productRequest.getProductPrice());
         newProduct.setProductDescription(productRequest.getProductDescription());
         newProduct.setColors(productRequest.getColors());
         newProduct.setSizes(productRequest.getSizes());
@@ -83,7 +83,7 @@ public class AdminService {
                         .getCategory())
                 .orElseThrow(()->new ItemNotFoundException("Category Not Found")));
         product.setProductName(productRequest.getProductName());
-        product.setProductPrice(productRequest.getProductPrize());
+        product.setProductPrice(productRequest.getProductPrice());
         product.setProductDescription(productRequest.getProductDescription());
         product.setColors(productRequest.getColors());
         product.setSizes(productRequest.getSizes());

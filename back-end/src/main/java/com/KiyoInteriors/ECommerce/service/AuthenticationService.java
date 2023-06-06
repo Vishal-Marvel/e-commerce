@@ -25,18 +25,22 @@ import com.KiyoInteriors.ECommerce.security.JWTTokenProvider;
 import org.springframework.security.authentication.AuthenticationManager;
 import com.KiyoInteriors.ECommerce.repository.UserRepository;
 import org.springframework.stereotype.Service;
+
 /**
-
-The "AuthenticationService" class is responsible for user authentication, registration, password change, and logout operations.
-
-It interacts with the "UserRepository", "AuthenticationManager", "JWTTokenProvider", "PasswordEncoder", and "CartRepository" to perform these operations.
-
-register(UserRequest userDTO): Registers a new user based on the provided user request.
-*/
+ * 
+ * The "AuthenticationService" class is responsible for user authentication,
+ * registration, password change, and logout operations.
+ * 
+ * It interacts with the "UserRepository", "AuthenticationManager",
+ * "JWTTokenProvider", "PasswordEncoder", and "CartRepository" to perform these
+ * operations.
+ * 
+ * register(UserRequest userDTO): Registers a new user based on the provided
+ * user request.
+ */
 @Service
 @RequiredArgsConstructor
-public class AuthenticationService
-{
+public class AuthenticationService {
     private final UserRepository userRepository;
     private final AuthenticationManager authenticationManager;
     private final JWTTokenProvider jwtTokenProvider;
@@ -44,8 +48,9 @@ public class AuthenticationService
     private final CartRepository cartRepository;
 
     public void register(final UserRequest userDTO) throws IOException {
-        Optional<User> optionalUser = userRepository.findUserByUsernameOrEmail(userDTO.getUsername(), userDTO.getEmail());
-        if (optionalUser.isPresent()){
+        Optional<User> optionalUser = userRepository.findUserByUsernameOrEmail(userDTO.getUsername(),
+                userDTO.getEmail());
+        if (optionalUser.isPresent()) {
             throw new ConstraintException("User Name or Email Already Exists");
         }
         User user = new User();
@@ -82,13 +87,14 @@ public class AuthenticationService
                 .build();
     }
 
-    public void changePassword(ChangePasswordDTO changePasswordDTO){
+    public void changePassword(ChangePasswordDTO changePasswordDTO) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-            username, changePasswordDTO.getOldPassword()
-        ));
+        // Authentication auth = authenticationManager.authenticate(new
+        // UsernamePasswordAuthenticationToken(
+        // username, changePasswordDTO.getOldPassword()
+        // ));
         User user = userRepository.findUserByUsername(username)
-                .orElseThrow(()-> new UserNotFoundException("User Not Found"));
+                .orElseThrow(() -> new UserNotFoundException("User Not Found"));
         user.setPassword(passwordEncoder.encode(changePasswordDTO.getNewPassword()));
         userRepository.save(user);
     }

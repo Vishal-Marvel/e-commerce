@@ -3,18 +3,13 @@ package com.KiyoInteriors.ECommerce.controller;
 import com.KiyoInteriors.ECommerce.DTO.Request.*;
 import com.KiyoInteriors.ECommerce.DTO.Response.*;
 import com.KiyoInteriors.ECommerce.entity.Order;
-import com.KiyoInteriors.ECommerce.entity.UserRole;
-import com.KiyoInteriors.ECommerce.exceptions.ItemNotFoundException;
 import com.KiyoInteriors.ECommerce.exceptions.UserNotFoundException;
 import com.KiyoInteriors.ECommerce.repository.CartRepository;
-import com.KiyoInteriors.ECommerce.repository.OrderRepository;
 import com.KiyoInteriors.ECommerce.repository.UserRepository;
 import com.KiyoInteriors.ECommerce.service.CartService;
 import com.KiyoInteriors.ECommerce.service.OrderService;
 import com.KiyoInteriors.ECommerce.service.ProductReviewService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
@@ -49,7 +44,6 @@ public class UserController
 {
     private final UserService userService;
     private final UserRepository userRepository;
-    private final OrderRepository orderRepository;
     private final CartService cartService;
     private final CartRepository cartRepository;
     private final OrderService orderService;
@@ -147,6 +141,8 @@ public class UserController
         return ResponseEntity.ok(orderService.displayAllOrder(user.getId()));
     }
 
+//    @GetMapping("/order/{id}")
+//    public ResponseEntity<OrderResponse>
 
     @PostMapping("/product/review")
     public ResponseEntity<MiscResponse> giveReview(@RequestBody ReviewRequest review){

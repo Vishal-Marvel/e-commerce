@@ -3,6 +3,7 @@ package com.KiyoInteriors.ECommerce.service;
 import com.KiyoInteriors.ECommerce.DTO.Request.OrderRequest;
 import com.KiyoInteriors.ECommerce.DTO.Request.UpdateOrderRequest;
 import com.KiyoInteriors.ECommerce.DTO.Response.CartProductsResponse;
+import com.KiyoInteriors.ECommerce.DTO.Response.OrderResponse;
 import com.KiyoInteriors.ECommerce.DTO.Response.OrderResponses;
 import com.KiyoInteriors.ECommerce.entity.*;
 import com.KiyoInteriors.ECommerce.exceptions.ItemNotFoundException;
@@ -81,7 +82,7 @@ public class OrderService {
         orderRepository.save(order);
     }
 
-    public List<OrderResponses>     displayAllOrder() {
+    public List<OrderResponses> displayAllOrder() {
         List<Order> orders = orderRepository.findAll();
         return orders.stream()
                 .map(order -> {
@@ -105,8 +106,7 @@ public class OrderService {
                                         .itemId(orderItem.getId())
                                         .build();
                             })
-                            .toList()
-                    );
+                            .toList());
                     return orderResponse;
                 })
                 .toList();
@@ -135,8 +135,7 @@ public class OrderService {
                                         .itemId(orderItem.getId())
                                         .build();
                             })
-                            .toList()
-                    );
+                            .toList());
                     return orderResponse;
                 })
                 .toList();
@@ -166,10 +165,41 @@ public class OrderService {
                                         .itemId(orderItem.getId())
                                         .build();
                             })
-                            .toList()
-                    );
+                            .toList());
                     return orderResponse;
                 })
                 .toList();
     }
+
+    public OrderResponse orderDetails(String orderId) {
+
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new ItemNotFoundException("Item for order ID not found"));
+        OrderResponse orderResponse = new OrderResponse(orderId,
+                order.getTotal(),
+                order.getOrderDate(),
+                order.getOrderStatus(),
+                order.getBillingAddress(),
+                order.getShippingAddress(),
+                null,
+                order.getOrderItems()
+                        .stream()
+                        .map(orderItem -> {
+                            Product product = productRepository.findById(orderItem.getProductId())
+                                    .orElseThrow(() -> new ItemNotFoundException("Product Not Found"));
+                            return CartProductsResponse.builder()
+                                    .quantity(orderItem.getQuantity())
+                                    .model(product.getModel())
+                                    .size(orderItem.getSize())
+                                    .color(orderItem.getColor())
+                                    .price(orderItem.getPrice())
+                                    .name(product.getProductName())
+                                    .image(product.getProductPics().get(0))
+                                    .itemId(orderItem.getId())
+                                    .build();
+                        })
+                        .toList());
+        return orderResponse;
+    }
+
 }

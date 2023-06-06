@@ -1,14 +1,14 @@
 package com.KiyoInteriors.ECommerce.DTO.Response;
 
 import com.KiyoInteriors.ECommerce.entity.Image;
-import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 import lombok.Data;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+
 /**
- * This class represents a user response object that contains the user's information.
+ * This class represents a user response object that contains the user's
+ * information.
  * It has the following fields:
  * - id: a unique identifier for the user
  * - username: a string that the user uses to log in

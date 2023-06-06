@@ -1,6 +1,7 @@
 package com.KiyoInteriors.ECommerce.controller;
 
 import com.KiyoInteriors.ECommerce.DTO.Response.CategoryResponse;
+import com.KiyoInteriors.ECommerce.DTO.Response.OrderResponse;
 import com.KiyoInteriors.ECommerce.DTO.Response.ProductResponse;
 import com.KiyoInteriors.ECommerce.entity.*;
 import com.KiyoInteriors.ECommerce.exceptions.ItemNotFoundException;
@@ -113,14 +114,14 @@ public class PublicController {
     }
     @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
     @GetMapping("/order/{id}")
-    public ResponseEntity<String> orderDetails(@PathVariable String id){
+    public ResponseEntity<OrderResponse> orderDetails(@PathVariable String id){
         String name = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findUserByUsername(name)
                 .orElseThrow(() -> new UserNotFoundException("User Not Found"));
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new ItemNotFoundException("Order Not Found"));
         if (user.getRole() == UserRole.ROLE_ADMIN || user.getId().equals(order.getUserId()))
-            return ResponseEntity.ok(id);
+            return ResponseEntity.ok(orderService.orderDetails(id));
         else{
             throw new AccessDeniedException("You Dont Have Access");
         }

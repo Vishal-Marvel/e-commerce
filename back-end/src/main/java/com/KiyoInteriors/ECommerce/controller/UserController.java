@@ -141,9 +141,6 @@ public class UserController
         return ResponseEntity.ok(orderService.displayAllOrder(user.getId()));
     }
 
-//    @GetMapping("/order/{id}")
-//    public ResponseEntity<OrderResponse>
-
     @PostMapping("/product/review")
     public ResponseEntity<MiscResponse> giveReview(@RequestBody ReviewRequest review){
         String name = SecurityContextHolder.getContext().getAuthentication().getName();

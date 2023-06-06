@@ -114,6 +114,7 @@ public class CartService {
                     .name(product.getProductName())
                     .price(product.getProductPrice())
                     .image(product.getProductPics().get(0))
+                    .model(product.getModel())
                     .color(cartItem.getColor())
                     .quantity(cartItem.getQuantity())
                     .size(cartItem.getSize())

@@ -1,9 +1,8 @@
 package com.KiyoInteriors.ECommerce.controller;
 
 import com.KiyoInteriors.ECommerce.DTO.Request.*;
-import com.KiyoInteriors.ECommerce.DTO.Response.CartProductsResponse;
-import com.KiyoInteriors.ECommerce.DTO.Response.MiscResponse;
-import com.KiyoInteriors.ECommerce.DTO.Response.UserResponse;
+import com.KiyoInteriors.ECommerce.DTO.Response.*;
+import com.KiyoInteriors.ECommerce.entity.Order;
 import com.KiyoInteriors.ECommerce.exceptions.UserNotFoundException;
 import com.KiyoInteriors.ECommerce.repository.CartRepository;
 import com.KiyoInteriors.ECommerce.repository.UserRepository;
@@ -54,32 +53,26 @@ public class UserController
     @GetMapping
     public ResponseEntity<UserResponse> getUser() {
         String name = SecurityContextHolder.getContext().getAuthentication().getName();
-        Optional<User> user = userRepository.findUserByUsername(name);
-        if (user.isEmpty()){
-            throw new UserNotFoundException("User Not Exists");
-        }
-        return ResponseEntity.ok(userService.convertUserToResponse(user.get()));
+        User user = userRepository.findUserByUsername(name)
+                .orElseThrow(()->new UserNotFoundException("User Not Found"));
+        return ResponseEntity.ok(userService.convertUserToResponse(user));
     }
 
     @PutMapping
     public ResponseEntity<MiscResponse> updateUser(@Valid @ModelAttribute UserRequest userDTO) throws IOException {
         String name = SecurityContextHolder.getContext().getAuthentication().getName();
-        Optional<User> user = userRepository.findUserByUsername(name);
-        if (user.isEmpty()){
-            throw new UserNotFoundException("User Not Exists");
-        }
-        userService.updateUser(userDTO, user.get().getId());
+        User user = userRepository.findUserByUsername(name)
+                .orElseThrow(()->new UserNotFoundException("User Not Found"));
+        userService.updateUser(userDTO, user.getId());
         return ResponseEntity.ok(MiscResponse.builder().response("User Updated").build());
     }
 
     @DeleteMapping
     public ResponseEntity<MiscResponse> deleteUser(){
         String name  = SecurityContextHolder.getContext().getAuthentication().getName();
-        Optional<User> user = userRepository.findUserByUsername( name);
-        if (user.isEmpty()){
-            throw new UserNotFoundException("User Not Exists");
-        }
-        userRepository.delete(user.get());
+        User user = userRepository.findUserByUsername(name)
+                .orElseThrow(()->new UserNotFoundException("User Not Found"));
+        userRepository.delete(user);
         return ResponseEntity.ok(MiscResponse.builder().response("User Deleted").build());
     }
     @GetMapping("/cart")
@@ -139,6 +132,17 @@ public class UserController
         orderService.createOrder(user, request);
         return ResponseEntity.ok(MiscResponse.builder().response("Order Created").build());
     }
+
+    @GetMapping("/order")
+    public ResponseEntity<List<OrderResponses>> orders(){
+        String name = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findUserByUsername(name)
+                .orElseThrow(()->new UserNotFoundException("User not Found"));
+        return ResponseEntity.ok(orderService.displayAllOrder(user.getId()));
+    }
+
+//    @GetMapping("/order/{id}")
+//    public ResponseEntity<OrderResponse>
 
     @PostMapping("/product/review")
     public ResponseEntity<MiscResponse> giveReview(@RequestBody ReviewRequest review){

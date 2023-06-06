@@ -21,7 +21,7 @@ import lombok.Data;
 public class CartProductsResponse {
     private String itemId;
     private String name;
-    private Double prize;
+    private Double price;
     private Image image;
     private String size;
     private String color;

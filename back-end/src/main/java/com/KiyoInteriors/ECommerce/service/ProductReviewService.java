@@ -45,7 +45,7 @@ public class ProductReviewService {
     public String giveReviewRating(User user, ReviewRequest request){
         List<Order> orders = orderRepository.findAllByUserId(user.getId());
         for(Order order: orders){
-            if(order.getCartItems().stream().anyMatch(item->item.getProductId().equals(request.getProductId()))){
+            if(order.getOrderItems().stream().anyMatch(item->item.getProductId().equals(request.getProductId()))){
                 Product product = productRepository.findById(request.getProductId())
                         .orElseThrow(()->new ItemNotFoundException("Product not found"));
                 ReviewRating reviewRating = ReviewRating.builder()

@@ -20,7 +20,7 @@ public class Product {
     private String id = UUID.randomUUID().toString();
     private String productName;
     private String productDescription;
-    private Double productPrize;
+    private Double productPrice;
     private List<String> sizes;
     private List<String> colors;
     private String model;

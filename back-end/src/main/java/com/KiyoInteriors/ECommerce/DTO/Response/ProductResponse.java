@@ -15,7 +15,7 @@ public class ProductResponse {
     private String id;
     private String productName;
     private String productDescription;
-    private Double productPrize;
+    private Double productPrice;
     private String category;
     private List<Image> productPics;
     private String model;
@@ -28,7 +28,7 @@ public class ProductResponse {
         this.id = product.getId();
         this.productName = product.getProductName();
         this.productDescription = product.getProductDescription();
-        this.productPrize = product.getProductPrize();
+        this.productPrice = product.getProductPrice();
         this.category = product.getCategory().toString();
         this.productPics = product.getProductPics();
         this.model = product.getModel();

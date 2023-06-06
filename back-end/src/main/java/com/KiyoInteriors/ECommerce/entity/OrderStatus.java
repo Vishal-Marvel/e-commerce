@@ -1,4 +1,5 @@
 package com.KiyoInteriors.ECommerce.entity;
+
 /**
  * This enum defines the possible status values for an order.
  * It can be used in interfaces or classes that deal with order data.
@@ -8,7 +9,7 @@ package com.KiyoInteriors.ECommerce.entity;
  * - REFUNDED: The order was refunded to the customer.
  */
 public enum OrderStatus {
-    SUCCESS,
-    FAILED,
-    REFUNDED
+    Payment_Done,
+    Order_Placed,
+
 }

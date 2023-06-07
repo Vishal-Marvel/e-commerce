@@ -1,25 +1,26 @@
 package com.KiyoInteriors.ECommerce.service;
 
-import com.KiyoInteriors.ECommerce.DTO.Request.ChangePasswordDTO;
+import com.KiyoInteriors.ECommerce.DTO.Request.*;
 import com.KiyoInteriors.ECommerce.entity.Cart;
-import com.KiyoInteriors.ECommerce.entity.Image;
 import com.KiyoInteriors.ECommerce.exceptions.ConstraintException;
 import com.KiyoInteriors.ECommerce.exceptions.UserNotFoundException;
 import com.KiyoInteriors.ECommerce.repository.CartRepository;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import com.KiyoInteriors.ECommerce.DTO.Response.AuthenticationResponse;
-import com.KiyoInteriors.ECommerce.DTO.Request.AuthenticationRequest;
+
 import java.io.IOException;
 import java.util.Date;
 import java.util.Optional;
+import java.util.UUID;
 
 import com.KiyoInteriors.ECommerce.entity.UserRole;
 import com.KiyoInteriors.ECommerce.entity.User;
-import com.KiyoInteriors.ECommerce.DTO.Request.UserRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import com.KiyoInteriors.ECommerce.security.JWTTokenProvider;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -30,11 +31,9 @@ import org.springframework.stereotype.Service;
  * 
  * The "AuthenticationService" class is responsible for user authentication,
  * registration, password change, and logout operations.
- * 
- * It interacts with the "UserRepository", "AuthenticationManager",
+ * * It interacts with the "UserRepository", "AuthenticationManager",
  * "JWTTokenProvider", "PasswordEncoder", and "CartRepository" to perform these
  * operations.
- * 
  * register(UserRequest userDTO): Registers a new user based on the provided
  * user request.
  */
@@ -46,8 +45,10 @@ public class AuthenticationService {
     private final JWTTokenProvider jwtTokenProvider;
     private final PasswordEncoder passwordEncoder;
     private final CartRepository cartRepository;
+    private final ImageService imageService;
+    private final EmailService emailService;
 
-    public void register(final UserRequest userDTO) throws IOException {
+    public void register(final UserRequest userDTO) throws IOException, MessagingException {
         Optional<User> optionalUser = userRepository.findUserByUsernameOrEmail(userDTO.getUsername(),
                 userDTO.getEmail());
         if (optionalUser.isPresent()) {
@@ -60,12 +61,13 @@ public class AuthenticationService {
         user.setName(userDTO.getName());
         user.setMobile(userDTO.getMobile());
         user.setAddresses(userDTO.getAddresses());
-        Image image = Image.builder()
-                .data(userDTO.getPhoto().getBytes())
-                .fileName(userDTO.getPhoto().getOriginalFilename())
-                .build();
-        user.setPhoto(image);
+        user.setPhoto(imageService.compressImage(userDTO.getPhoto()));
         user.setRole(UserRole.ROLE_USER);
+        user.setActive(false);
+        String OTP = UUID.randomUUID().toString();
+        user.setOTP(OTP);
+        user.setOTPLimit(new Date(new Date().getTime() + 1000*60*60));
+        emailService.sendVerificationEmail(userDTO.getEmail(), OTP, "registration", "verify");
         userRepository.save(user);
         Cart cart = new Cart(user.getId());
         cartRepository.save(cart);
@@ -77,6 +79,9 @@ public class AuthenticationService {
         User user = userRepository.findUserByUsernameOrEmail(
                 loginDTO.getUsernameOrEmail(), loginDTO.getUsernameOrEmail())
                 .orElseThrow(() -> new UsernameNotFoundException("User Not found"));
+        if (!user.isActive()){
+            throw new AccessDeniedException("User not Verified");
+        }
         SecurityContextHolder.getContext().setAuthentication(auth);
         user.setLastLoggedIn(new Date());
         userRepository.save(user);
@@ -87,12 +92,21 @@ public class AuthenticationService {
                 .build();
     }
 
+    public void verifyUser(String code){
+        User user = userRepository.findUserByOTP(code)
+            .orElseThrow(()-> new UserNotFoundException("Invalid Code"));
+        if(new Date().after(user.getOTPLimit())){
+            throw new AccessDeniedException("Code Expired");
+        }
+        user.setActive(true);
+        user.setOTP(null);
+        user.setOTPLimit(null);
+        userRepository.save(user);
+
+    }
+
     public void changePassword(ChangePasswordDTO changePasswordDTO) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        // Authentication auth = authenticationManager.authenticate(new
-        // UsernamePasswordAuthenticationToken(
-        // username, changePasswordDTO.getOldPassword()
-        // ));
         User user = userRepository.findUserByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException("User Not Found"));
         user.setPassword(passwordEncoder.encode(changePasswordDTO.getNewPassword()));
@@ -101,5 +115,25 @@ public class AuthenticationService {
 
     public void logout() {
         SecurityContextHolder.getContext().setAuthentication(null);
+    }
+
+    public void resetPassword(String code, ResetPasswordDTO resetPasswordRequest) {
+        User user = userRepository.findUserByOTP(code)
+                .orElseThrow(()->new UserNotFoundException("Invalid Code"));
+        user.setPassword(passwordEncoder.encode(resetPasswordRequest.getNewPassword()));
+        user.setOTP(null);
+        user.setOTPLimit(null);
+        userRepository.save(user);
+
+    }
+
+    public void requestResetPassword(ResetPasswordRequest resetPasswordRequest) throws MessagingException {
+        User user = userRepository.findUserByUsernameOrEmail(resetPasswordRequest.getUsernameOrEmail() , resetPasswordRequest.getUsernameOrEmail())
+                .orElseThrow(()->new UserNotFoundException("User Not Found"));
+        user.setOTPLimit(new Date(new Date().getTime()+1000*60*60));
+        String otp = UUID.randomUUID().toString();
+        user.setOTP(otp);
+        userRepository.save(user);
+        emailService.sendVerificationEmail(user.getEmail(), otp, "Reset Password", "reset-password");
     }
 }

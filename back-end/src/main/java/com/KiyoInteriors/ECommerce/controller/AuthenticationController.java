@@ -1,14 +1,13 @@
 package com.KiyoInteriors.ECommerce.controller;
 
-import com.KiyoInteriors.ECommerce.DTO.Request.AuthenticationRequest;
-import com.KiyoInteriors.ECommerce.DTO.Request.ChangePasswordDTO;
-import com.KiyoInteriors.ECommerce.DTO.Request.UserRequest;
+import com.KiyoInteriors.ECommerce.DTO.Request.*;
 import com.KiyoInteriors.ECommerce.DTO.Response.AuthenticationResponse;
 import com.KiyoInteriors.ECommerce.DTO.Response.MiscResponse;
 import com.KiyoInteriors.ECommerce.entity.User;
 import com.KiyoInteriors.ECommerce.entity.UserRole;
 import com.KiyoInteriors.ECommerce.exceptions.UserNotFoundException;
 import com.KiyoInteriors.ECommerce.repository.UserRepository;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -32,7 +31,7 @@ public class AuthenticationController
     private final AuthenticationService authService;
 
     @PostMapping( "/register" )
-    public ResponseEntity<MiscResponse> register(@Valid @ModelAttribute UserRequest userDTO) throws IOException {
+    public ResponseEntity<MiscResponse> register(@Valid @ModelAttribute UserRequest userDTO) throws IOException, MessagingException {
         authService.register(userDTO);
         return ResponseEntity.ok(MiscResponse.builder().response("User Registered").build());
 
@@ -43,13 +42,38 @@ public class AuthenticationController
         return ResponseEntity.ok(authService.authenticate(request));
     }
 
-    @PostMapping("/changePassword")
+    @PostMapping("/verify")
+    public ResponseEntity<MiscResponse> verify(
+            @RequestParam("code") String code
+    ){
+        authService.verifyUser(code);
+        return ResponseEntity.ok(MiscResponse.builder()
+                .response("User Verified").build());
+    }
+
+    @PostMapping("/change-password")
     @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
     public ResponseEntity<MiscResponse> changePassword(@Valid @RequestBody ChangePasswordDTO changePasswordDTO){
         authService.changePassword(changePasswordDTO);
         return ResponseEntity.ok(MiscResponse.builder()
                 .response("Password Changed").build());
     }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<MiscResponse> resetPassword(@RequestBody ResetPasswordDTO resetPasswordRequest,
+                                                      @RequestParam("code") String code){
+        authService.resetPassword(code, resetPasswordRequest);
+        return ResponseEntity.ok(MiscResponse.builder()
+                .response("Password Changed").build());
+    }
+
+    @PostMapping("/reset-password-request")
+    public ResponseEntity<MiscResponse> resetPassword(@RequestBody ResetPasswordRequest resetPasswordRequest) throws MessagingException {
+        authService.requestResetPassword(resetPasswordRequest);
+        return ResponseEntity.ok(MiscResponse.builder()
+                .response("Reset Link Sent").build());
+    }
+
 
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     @PostMapping({ "/logout" })

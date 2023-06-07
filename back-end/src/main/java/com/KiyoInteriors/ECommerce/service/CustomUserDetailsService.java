@@ -1,17 +1,18 @@
 package com.KiyoInteriors.ECommerce.service;
 
-import java.util.List;
-
+import com.KiyoInteriors.ECommerce.entity.User;
+import com.KiyoInteriors.ECommerce.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
-import java.util.Collections;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import com.KiyoInteriors.ECommerce.entity.User;
 import org.springframework.security.core.userdetails.UserDetails;
-import com.KiyoInteriors.ECommerce.repository.UserRepository;
-import org.springframework.stereotype.Service;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
+
+import java.nio.file.AccessDeniedException;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * 
@@ -30,6 +31,15 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String usernameOrEmail) throws UsernameNotFoundException {
         User user = userRepository.findUserByUsernameOrEmail(usernameOrEmail, usernameOrEmail)
                 .orElseThrow(() -> new UsernameNotFoundException("User Not Found"));
+        if(!user.isActive()){
+
+            try {
+                throw new AccessDeniedException("User is Not Verified");
+            } catch (AccessDeniedException e) {
+                throw new RuntimeException(e);
+            }
+
+        }
         List<GrantedAuthority> authorities = Collections
                 .singletonList(new SimpleGrantedAuthority(user.getRole().name()));
         return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(),

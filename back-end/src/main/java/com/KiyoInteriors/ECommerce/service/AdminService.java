@@ -30,6 +30,7 @@ addCategory(CategoryRequest request): Adds a new category based on the provided 
 public class AdminService {
     private final CategoryRepository categoryRepository;
     private final ProductRepository productRepository;
+    private final ImageService imageService;
 
     public void addCategory(CategoryRequest request){
         Optional<Category> tempCategory = categoryRepository.findByCategory(request.getCategory());
@@ -63,12 +64,8 @@ public class AdminService {
         if (productRequest.getProductPics()!=null) {
             List<Image> images = new ArrayList<>();
             for (MultipartFile file : productRequest.getProductPics()) {
-                Image image = Image.builder()
-                        .data(file.getBytes())
-                        .fileName(file.getOriginalFilename())
-                        .contentType(file.getContentType())
-                        .build();
-                images.add(image);
+
+                images.add(imageService.compressImage(file));
             }
             newProduct.setProductPics(images);
         }
@@ -91,12 +88,8 @@ public class AdminService {
         if (productRequest.getProductPics()!=null) {
             List<Image> images = new ArrayList<>();
             for (MultipartFile file : productRequest.getProductPics()) {
-                Image image = Image.builder()
-                        .data(file.getBytes())
-                        .fileName(file.getOriginalFilename())
-                        .contentType(file.getContentType())
-                        .build();
-                images.add(image);
+
+                images.add(imageService.compressImage(file));
             }
             product.setProductPics(images);
         }

@@ -53,5 +53,8 @@ public class User {
     private String email;
     private UserRole role;
     private Date lastLoggedIn;
+    private String OTP;
+    private Date OTPLimit;
+    private boolean isActive;
 
 }

@@ -22,6 +22,7 @@ updateUser(UserRequest userDTO, String id): Updates the user details based on th
 public class UserService
 {
     private final UserRepository userRepository;
+    private final ImageService imageService;
 
     public void updateUser(final UserRequest userDTO, final String id) throws IOException {
         User user = this.userRepository.findById(id)
@@ -30,12 +31,7 @@ public class UserService
         user.setName(userDTO.getName());
         user.setMobile(userDTO.getMobile());
         user.setAddresses(userDTO.getAddresses());
-        Image image = Image.builder()
-                .data(userDTO.getPhoto().getBytes())
-                .fileName(userDTO.getPhoto().getOriginalFilename())
-                .contentType(userDTO.getPhoto().getContentType())
-                .build();
-        user.setPhoto(image);
+        user.setPhoto(imageService.compressImage(userDTO.getPhoto()));
         userRepository.save(user);
     }
 

@@ -25,6 +25,7 @@ public class Bootstrap implements CommandLineRunner
             user.setName("admin");
             user.setPassword(passwordEncoder.encode("password"));
             user.setRole(UserRole.ROLE_ADMIN);
+            user.setActive(true);
             userRepository.save(user);
         }
     }

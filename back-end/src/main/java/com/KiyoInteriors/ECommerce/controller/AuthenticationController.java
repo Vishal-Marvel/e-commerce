@@ -45,10 +45,17 @@ public class AuthenticationController
     @PostMapping("/verify")
     public ResponseEntity<MiscResponse> verify(
             @RequestParam("code") String code
-    ){
+    ) throws Exception {
         authService.verifyUser(code);
         return ResponseEntity.ok(MiscResponse.builder()
                 .response("User Verified").build());
+    }
+
+    @PostMapping("/dynamic-verify")
+    public ResponseEntity<MiscResponse> dynamicVerify(@RequestBody ResetPasswordRequest resetPasswordRequest) throws MessagingException {
+        authService.requestVerify(resetPasswordRequest);
+        return ResponseEntity.ok(MiscResponse.builder()
+                .response("Verification Link Sent").build());
     }
 
     @PostMapping("/change-password")

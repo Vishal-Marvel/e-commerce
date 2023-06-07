@@ -14,7 +14,7 @@ public class ImageService {
     public Image compressImage(MultipartFile file) throws IOException {
         Thumbnails.Builder<? extends InputStream> builder = Thumbnails.of(file.getInputStream())
                 .size(500, 500)
-                .outputQuality(0.8);
+                .outputQuality(0.6);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         builder.toOutputStream(outputStream);
         outputStream.toByteArray();

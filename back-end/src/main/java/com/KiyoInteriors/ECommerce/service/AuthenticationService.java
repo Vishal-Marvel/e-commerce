@@ -64,10 +64,7 @@ public class AuthenticationService {
         user.setPhoto(imageService.compressImage(userDTO.getPhoto()));
         user.setRole(UserRole.ROLE_USER);
         user.setActive(false);
-        String OTP = UUID.randomUUID().toString();
-        user.setOTP(OTP);
-        user.setOTPLimit(new Date(new Date().getTime() + 1000*60*60));
-        emailService.sendVerificationEmail(userDTO.getEmail(), OTP, "registration", "verify");
+        sendMail(user, "verify", "Registration");
         userRepository.save(user);
         Cart cart = new Cart(user.getId());
         cartRepository.save(cart);
@@ -92,11 +89,14 @@ public class AuthenticationService {
                 .build();
     }
 
-    public void verifyUser(String code){
+    public void verifyUser(String code) throws Exception {
         User user = userRepository.findUserByOTP(code)
             .orElseThrow(()-> new UserNotFoundException("Invalid Code"));
         if(new Date().after(user.getOTPLimit())){
             throw new AccessDeniedException("Code Expired");
+        }
+        if(user.isActive()){
+            throw new Exception("User Already Activated");
         }
         user.setActive(true);
         user.setOTP(null);
@@ -126,14 +126,24 @@ public class AuthenticationService {
         userRepository.save(user);
 
     }
-
-    public void requestResetPassword(ResetPasswordRequest resetPasswordRequest) throws MessagingException {
-        User user = userRepository.findUserByUsernameOrEmail(resetPasswordRequest.getUsernameOrEmail() , resetPasswordRequest.getUsernameOrEmail())
-                .orElseThrow(()->new UserNotFoundException("User Not Found"));
+    public void sendMail(User user, String endpoint, String purpose) throws MessagingException {
         user.setOTPLimit(new Date(new Date().getTime()+1000*60*60));
         String otp = UUID.randomUUID().toString();
         user.setOTP(otp);
         userRepository.save(user);
-        emailService.sendVerificationEmail(user.getEmail(), otp, "Reset Password", "reset-password");
+        emailService.sendVerificationEmail(user.getEmail(), otp, purpose, endpoint);
+
+    }
+
+    public void requestResetPassword(ResetPasswordRequest resetPasswordRequest) throws MessagingException {
+        User user = userRepository.findUserByUsernameOrEmail(resetPasswordRequest.getUsernameOrEmail() , resetPasswordRequest.getUsernameOrEmail())
+                .orElseThrow(()->new UserNotFoundException("User Not Found"));
+        sendMail(user, "reset-password", "Reset Password");
+    }
+
+    public void requestVerify(ResetPasswordRequest resetPasswordRequest) throws MessagingException{
+        User user = userRepository.findUserByUsernameOrEmail(resetPasswordRequest.getUsernameOrEmail() , resetPasswordRequest.getUsernameOrEmail())
+                .orElseThrow(()->new UserNotFoundException("User Not Found"));
+        sendMail(user, "verify", "Verification");
     }
 }

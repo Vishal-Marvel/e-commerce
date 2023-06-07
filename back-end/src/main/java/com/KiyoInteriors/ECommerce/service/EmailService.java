@@ -4,9 +4,12 @@ import jakarta.mail.MessagingException;
 
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+
+import java.io.File;
 
 @Service
 @RequiredArgsConstructor
@@ -23,34 +26,23 @@ public class EmailService {
         helper.setTo(recipientEmail);
         helper.setSubject("Verification");
 
-        // Set the HTML content
-        String htmlContent = "<table role=\"presentation\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" width=\"100%\" align=\"center\" bgcolor=\"#FFFFFF\">\n" +
-                "    <tbody>\n" +
-                "    <tr>\n" +
-                "        <td style=\"padding:0px 40px 20px 40px;font-family:'Roboto',sans-serif;font-size:17px;line-height:20px;color:#555555;text-align:center;font-weight:300\">\n" +
-                "\n" +
-                "\n" +
-                "            <p style=\"margin:0 0 5px 0\">You received this email because you requested for "+purpose+"</p>\n" +
-                "\n" +
-                "\n" +
-                "    </td></tr> \n" +
-                "    <tr>\n" +
-                "        <td style=\"padding:0px 40px 20px 40px;font-family:'Roboto',sans-serif;font-size:17px;line-height:20px;color:#555555;text-align:center;font-weight:300\">\n" +
-                "\n" +
-                "\n" +
-                "            <p style=\"margin:0 0 5px 0\">The below link is valid only for one hour</p>\n" +
-                "\n" +
-                "\n" +
-                "    </td></tr>\n" +
-                "    <tr>\n" +
-                "        <td style=\"padding:20px 40px 40px 40px;text-align:center\" align=\"center\">" +
-                "            <p style=\"text-align: center; margin-top: 10px;font-size:20px\"><a href=\""+url+"\">Click here</a> to verify your email.</p>\n" +
-                "\n" +
-                "        </td>\n" +
-                "    </tr>\n" +
-                "\n" +
-                "</tbody></table>";
 
+        String htmlContent = "    <table role=\"presentation\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" width=\"100%\" style=\"background-color: #f8f8f8;\">\n" +
+                "        <tr>\n" +
+                "            <td align=\"center\" style=\"padding: 5px;\">\n" +
+                "               <h1> Kiyo Interiors</h1>" +
+                "            </td>" +
+                "        </tr>" +
+                "        <tr>" +
+                "            <td style=\"padding: 20px;\">\n" +
+                "                <h3 style=\"font-size: 24px; margin-bottom: 20px;\">Email Verification</h3>\n" +
+                "                <p style=\"font-size: 16px; margin-bottom: 20px;\">Dear User,</p>\n" +
+                "                <p style=\"font-size: 16px; margin-bottom: 20px;\">Thank you for registering with our company. You received this email because you requested for "+purpose+" please click the button below:</p>\n" +
+                "                <a href=\""+url+"\" style=\"display: inline-block; background-color: #4caf50; color: #ffffff; font-size: 16px; text-decoration: none; padding: 10px 20px; border-radius: 5px;\">Verify Email</a>\n" +
+                "                <p style=\"font-size: 16px; margin-top: 20px;\">If you did not create an account with us, please ignore this email.</p>\n" +
+                "            </td>\n" +
+                "        </tr>\n" +
+                "    </table>";
         helper.setText(htmlContent, true);
 
         javaMailSender.send(message);

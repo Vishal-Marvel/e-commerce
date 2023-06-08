@@ -65,11 +65,22 @@ public class CartService {
                         cartRepository.save(cart);
                         return;
                     }
+                } else {
+                    item.setQuantity(request.getQuantity() + item.getQuantity());
+                    if (request.getQuantity() > product.getQuantity()) {
+                        throw new ItemNotFoundException("Quantity insufficient");
+                    }
+                    cartRepository.save(cart);
+                    return;
                 }
 
             }
 
         }
+        if (request.getQuantity() > product.getQuantity()) {
+            throw new ItemNotFoundException("Quantity insufficient");
+        }
+
         CartItem cartItemParameter = CartItem.builder()
                 .productId(product.getId())
                 .id(UUID.randomUUID().toString())

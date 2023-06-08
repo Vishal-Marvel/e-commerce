@@ -8,9 +8,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
 /**
  * This class represents a product entity that can be stored in a database.
- * It has various attributes that describe the product, such as name, description, prize, sizes, colors, model, category and pictures.
+ * It has various attributes that describe the product, such as name,
+ * description, prize, sizes, colors, model, category and pictures.
  * It also has an id field that is automatically generated using UUID.
  */
 @Data
@@ -26,6 +28,7 @@ public class Product {
     private String model;
     private Category category;
     private List<Image> productPics;
-    private Map<String,ReviewRating> reviewRating = new HashMap<>();
-    private Double rating=0.0;
+    private Map<String, ReviewRating> reviewRating = new HashMap<>();
+    private Double rating = 0.0;
+    private Integer quantity;
 }

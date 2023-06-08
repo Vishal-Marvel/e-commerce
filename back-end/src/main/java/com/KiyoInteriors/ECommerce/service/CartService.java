@@ -40,56 +40,81 @@ public class CartService {
             if (item.getProductId().equals(request.getProductId())) {
                 if (item.getColor() != null && item.getSize() != null) {
                     if (item.getColor().equals(request.getColor()) && item.getSize().equals(request.getSize())) {
-                        item.setQuantity(item.getQuantity() + 1);
+                        item.setQuantity(request.getQuantity() + item.getQuantity());
+                        if (request.getQuantity() > product.getQuantity()) {
+                            throw new ItemNotFoundException("Quantity insufficient");
+                        }
                         cartRepository.save(cart);
                         return;
                     }
                 } else if (item.getColor() != null) {
                     if (item.getColor().equals(request.getColor())) {
-                        item.setQuantity(item.getQuantity() + 1);
+                        item.setQuantity(request.getQuantity() + item.getQuantity());
+                        if (request.getQuantity() > product.getQuantity()) {
+                            throw new ItemNotFoundException("Quantity insufficient");
+                        }
                         cartRepository.save(cart);
                         return;
                     }
                 } else if (item.getSize() != null) {
                     if (item.getSize().equals(request.getSize())) {
-                        item.setQuantity(item.getQuantity() + 1);
+                        item.setQuantity(request.getQuantity() + item.getQuantity());
+                        if (request.getQuantity() > product.getQuantity()) {
+                            throw new ItemNotFoundException("Quantity insufficient");
+                        }
                         cartRepository.save(cart);
                         return;
                     }
+                } else {
+                    item.setQuantity(request.getQuantity() + item.getQuantity());
+                    if (request.getQuantity() > product.getQuantity()) {
+                        throw new ItemNotFoundException("Quantity insufficient");
+                    }
+                    cartRepository.save(cart);
+                    return;
                 }
 
             }
 
         }
+        if (request.getQuantity() > product.getQuantity()) {
+            throw new ItemNotFoundException("Quantity insufficient");
+        }
+
         CartItem cartItemParameter = CartItem.builder()
                 .productId(product.getId())
                 .id(UUID.randomUUID().toString())
                 .size(request.getSize())
                 .color(request.getColor())
+                .quantity(request.getQuantity())
                 .build();
-        if (request.getQuantity() != null) {
-            cartItemParameter.setQuantity(request.getQuantity());
-        } else {
-            cartItemParameter.setQuantity(1);
-        }
+        // if (request.getQuantity() != null) {
+        // cartItemParameter.setQuantity(request.getQuantity());
+        // } else {
+        // cartItemParameter.setQuantity(1);
+        // }
         cart.getCartItem().put(cartItemParameter.getId(), cartItemParameter);
         cartRepository.save(cart);
+        productRepository.save(product);
     }
 
     public void updateProduct(User user, UpdateCartRequest request) {
         Cart cart = cartRepository.findCartByUserId(user.getId())
                 .orElseThrow(() -> new ItemNotFoundException("Cart Not Found"));
+        Product product = productRepository.findById(request.getItemId())
+                .orElseThrow(() -> new ItemNotFoundException("Requested Product not found"));
         if (!cart.getCartItem().containsKey(request.getItemId())) {
             throw new ItemNotFoundException("Item Not Found");
         }
         CartItem item = cart.getCartItem().get(request.getItemId());
         item.setColor(request.getColor());
-        if (request.getQuantity() != null) {
-            item.setQuantity(request.getQuantity());
-        } else {
-            item.setQuantity(1);
-        }
+
+        item.setQuantity(request.getQuantity());
+
         item.setSize(request.getSize());
+        if (item.getQuantity() > product.getQuantity()) {
+            throw new ItemNotFoundException("Quantity insufficient");
+        }
         cartRepository.save(cart);
     }
 

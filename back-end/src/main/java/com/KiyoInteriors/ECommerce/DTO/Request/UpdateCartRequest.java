@@ -1,8 +1,10 @@
 package com.KiyoInteriors.ECommerce.DTO.Request;
 
 import lombok.Data;
+
 /**
- * This class represents a request to update the cart with a new item or modify an existing item.
+ * This class represents a request to update the cart with a new item or modify
+ * an existing item.
  * It contains the following fields:
  * - itemId: the unique identifier of the item
  * - size: the size of the item (e.g. S, M, L, XL)
@@ -11,6 +13,7 @@ import lombok.Data;
  */
 @Data
 public class UpdateCartRequest {
+
     private String itemId;
     private String size;
     private Integer quantity;

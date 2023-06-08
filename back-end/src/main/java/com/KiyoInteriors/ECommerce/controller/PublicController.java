@@ -67,20 +67,25 @@ public class PublicController {
 
     @GetMapping("/products")
     public ResponseEntity<List<ProductResponse>> searchProducts(
-            @RequestParam(value = "category", required = false) String category,
+            @RequestParam(value = "category", required = false) List<String> categories,
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "priceFrom", required = false) Double priceFrom,
             @RequestParam(value = "priceTo", required = false) Double priceTo,
             @RequestParam(value = "availability", required = false) String availability,
-            @RequestParam(value = "color", required = false) String color,
-            @RequestParam(value = "size", required = false) String size) {
+            @RequestParam(value = "color", required = false) List<String> colors,
+            @RequestParam(value = "size", required = false) List<String> sizes) {
 
         Query query = new Query();
 
-        if (category != null) {
-            Category category1 = categoryRepository.findByCategory(category)
-                            .orElseThrow(()->new ItemNotFoundException("Category Not Found"));
-            query.addCriteria(Criteria.where("category").is(category1));
+        if (categories != null) {
+            List<Category> categoryList = new ArrayList<>();
+            for (String category : categories) {
+                Category cat = categoryRepository.findByCategory(category)
+                        .orElseThrow(() -> new ItemNotFoundException("Category Not Found"));
+                categoryList.add(cat);
+            }
+            System.out.println("categoryList = " + categoryList);
+            query.addCriteria(Criteria.where("category").in(categoryList));
         }
 
         if (name != null) {
@@ -98,11 +103,11 @@ public class PublicController {
                 query.addCriteria(Criteria.where("quantity").is(0));
         }
 
-        if (color!= null){
-            query.addCriteria(Criteria.where("color").is(color));
+        if (colors!= null && !colors.isEmpty()){
+            query.addCriteria(Criteria.where("colors").in(colors));
         }
-        if (size!= null){
-            query.addCriteria(Criteria.where("size").is(size));
+        if (sizes!= null && !sizes.isEmpty()){
+            query.addCriteria(Criteria.where("sizes").in(sizes));
         }
 
         List<Product> products = mongoOperations.find(query, Product.class);

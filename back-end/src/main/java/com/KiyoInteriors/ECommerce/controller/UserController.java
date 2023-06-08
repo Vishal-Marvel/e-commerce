@@ -12,6 +12,7 @@ import com.KiyoInteriors.ECommerce.repository.UserRepository;
 import com.KiyoInteriors.ECommerce.service.CartService;
 import com.KiyoInteriors.ECommerce.service.OrderService;
 import com.KiyoInteriors.ECommerce.service.ProductReviewService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -45,6 +46,7 @@ import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
+@SecurityRequirement(name = "Bearer Authentication")
 @RequestMapping({ "/user" })
 public class UserController
 {

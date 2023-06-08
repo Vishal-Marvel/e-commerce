@@ -7,6 +7,7 @@ import com.KiyoInteriors.ECommerce.entity.User;
 import com.KiyoInteriors.ECommerce.entity.UserRole;
 import com.KiyoInteriors.ECommerce.exceptions.UserNotFoundException;
 import com.KiyoInteriors.ECommerce.repository.UserRepository;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -58,6 +59,7 @@ public class AuthenticationController
                 .response("Verification Link Sent").build());
     }
 
+    @SecurityRequirement(name = "Bearer Authentication")
     @PostMapping("/change-password")
     @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
     public ResponseEntity<MiscResponse> changePassword(@Valid @RequestBody ChangePasswordDTO changePasswordDTO){
@@ -83,6 +85,7 @@ public class AuthenticationController
 
 
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
+    @SecurityRequirement(name = "Bearer Authentication")
     @PostMapping({ "/logout" })
     public ResponseEntity<MiscResponse> logout() {
         authService.logout();
@@ -90,6 +93,7 @@ public class AuthenticationController
     }
 
     @PostMapping("/updatePrivilege/{id}")
+    @SecurityRequirement(name = "Bearer Authentication")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<MiscResponse> changePrivilege(@PathVariable String id){
         User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User Not Found"));

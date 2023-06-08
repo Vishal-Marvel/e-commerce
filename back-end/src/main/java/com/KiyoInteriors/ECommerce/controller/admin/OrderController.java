@@ -9,6 +9,7 @@ import com.KiyoInteriors.ECommerce.exceptions.ItemNotFoundException;
 import com.KiyoInteriors.ECommerce.exceptions.UserNotFoundException;
 import com.KiyoInteriors.ECommerce.repository.OrderRepository;
 import com.KiyoInteriors.ECommerce.repository.UserRepository;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -26,12 +27,14 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/admin/order")
+@SecurityRequirement(name = "Bearer Authentication")
+
 
 public class OrderController {
     private final OrderService orderService;
     private final OrderRepository orderRepository;
 
-    @PutMapping
+    @PutMapping("/update-status")
     public ResponseEntity<MiscResponse> updateOrderStatus(@RequestBody UpdateOrderRequest updateOrderRequest) {
         orderService.orderStatusUpdateAdmin(updateOrderRequest);
         return ResponseEntity.ok(MiscResponse.builder().response("OrderStatusUpdated").build());

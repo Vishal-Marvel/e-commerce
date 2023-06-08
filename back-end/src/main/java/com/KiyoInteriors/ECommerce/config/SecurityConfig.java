@@ -1,6 +1,8 @@
 package com.KiyoInteriors.ECommerce.config;
 
 import com.KiyoInteriors.ECommerce.entity.UserRole;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -17,10 +19,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.context.annotation.Configuration;
 
-@Configuration
-@EnableMethodSecurity
-@EnableWebSecurity
-@RequiredArgsConstructor
+
 /**
  * This class provides the security configuration for the application.
  * It defines the authentication and authorization rules for different endpoints
@@ -28,6 +27,15 @@ import org.springframework.context.annotation.Configuration;
  * It also configures the password encoder, the authentication manager, and the
  * JWT filter and entry point.
  */
+@Configuration
+@EnableMethodSecurity
+@RequiredArgsConstructor
+@SecurityScheme(
+        name = "Bearer Authentication",
+        type = SecuritySchemeType.HTTP,
+        bearerFormat = "JWT",
+        scheme = "bearer"
+)
 public class SecurityConfig {
     private final JWTAuthFilter authFilter;
     private final JWTAuthEntryPoint authEntryPoint;

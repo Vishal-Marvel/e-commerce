@@ -6,6 +6,7 @@ import com.KiyoInteriors.ECommerce.entity.Category;
 import com.KiyoInteriors.ECommerce.exceptions.ItemNotFoundException;
 import com.KiyoInteriors.ECommerce.repository.CategoryRepository;
 import com.KiyoInteriors.ECommerce.service.AdminService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/admin/category")
+@SecurityRequirement(name = "Bearer Authentication")
+
 /**
  * This class is responsible for managing categories of products.
  * It provides methods to add, update and delete categories using a repository

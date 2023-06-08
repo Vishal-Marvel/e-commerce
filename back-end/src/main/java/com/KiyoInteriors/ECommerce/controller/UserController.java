@@ -3,13 +3,17 @@ package com.KiyoInteriors.ECommerce.controller;
 import com.KiyoInteriors.ECommerce.DTO.Request.*;
 import com.KiyoInteriors.ECommerce.DTO.Response.*;
 import com.KiyoInteriors.ECommerce.entity.Order;
+import com.KiyoInteriors.ECommerce.entity.UserRole;
+import com.KiyoInteriors.ECommerce.exceptions.ItemNotFoundException;
 import com.KiyoInteriors.ECommerce.exceptions.UserNotFoundException;
 import com.KiyoInteriors.ECommerce.repository.CartRepository;
+import com.KiyoInteriors.ECommerce.repository.OrderRepository;
 import com.KiyoInteriors.ECommerce.repository.UserRepository;
 import com.KiyoInteriors.ECommerce.service.CartService;
 import com.KiyoInteriors.ECommerce.service.OrderService;
 import com.KiyoInteriors.ECommerce.service.ProductReviewService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
@@ -21,9 +25,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
-@RestController
-@RequiredArgsConstructor
-@RequestMapping({ "/user" })
+
 /**
  * A controller class that handles requests related to user and cart operations.
  * It uses the UserService, UserRepository, CartService and CartRepository classes
@@ -40,12 +42,16 @@ import java.util.Optional;
  * @throws UserNotFoundException if the user does not exist in the database.
  * @throws IOException if there is an error in reading or writing the user image file.
  */
+
+@RestController
+@RequiredArgsConstructor
+@RequestMapping({ "/user" })
 public class UserController
 {
     private final UserService userService;
     private final UserRepository userRepository;
     private final CartService cartService;
-    private final CartRepository cartRepository;
+    private final OrderRepository orderRepository;
     private final OrderService orderService;
     private final ProductReviewService productReviewService;
 
@@ -147,7 +153,18 @@ public class UserController
         User user = userRepository.findUserByUsername(name)
                 .orElseThrow(()->new UserNotFoundException("User not Found"));
         return ResponseEntity.ok(MiscResponse.builder().response(productReviewService.giveReviewRating(user, review)).build());
-
-
+    }
+    @GetMapping("/order/{id}")
+    public ResponseEntity<OrderResponse> orderDetails(@PathVariable String id){
+        String name = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findUserByUsername(name)
+                .orElseThrow(() -> new UserNotFoundException("User Not Found"));
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new ItemNotFoundException("Order Not Found"));
+        if (user.getId().equals(order.getUserId()))
+            return ResponseEntity.ok(orderService.orderDetails(id));
+        else{
+            throw new AccessDeniedException("You Dont Have Access");
+        }
     }
 }

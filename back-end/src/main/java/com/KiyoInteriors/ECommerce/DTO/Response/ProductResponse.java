@@ -31,7 +31,7 @@ public class ProductResponse {
         this.productName = product.getProductName();
         this.productDescription = product.getProductDescription();
         this.productPrice = product.getPrice();
-        this.discountPercentage = (int) ((product.getMRP()-product.getPrice()) /product.getMRP()) *100;
+        this.discountPercentage = (int)Math.round((product.getMRP()-product.getPrice())/product.getMRP()*100);
         this.MRP = product.getMRP();
         this.category = product.getCategory().getCategory();
         this.productPics = product.getProductPics();

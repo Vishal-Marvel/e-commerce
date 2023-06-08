@@ -12,10 +12,10 @@ import com.KiyoInteriors.ECommerce.repository.ProductRepository;
 import com.KiyoInteriors.ECommerce.repository.UserRepository;
 import com.KiyoInteriors.ECommerce.service.OrderService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -36,6 +36,7 @@ public class PublicController {
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
     private final OrderService orderService;
+    private final MongoOperations mongoOperations;
 
     @GetMapping("/category")
     public ResponseEntity<List<CategoryResponse>> categories(){
@@ -58,72 +59,58 @@ public class PublicController {
         );
     }
 
-    @GetMapping("/product")
-    public ResponseEntity<List<ProductResponse>> products(){
-
-        return ResponseEntity.ok(
-                productRepository.findAll()
-                        .stream()
-                        .map(ProductResponse::new)
-                        .toList()
-        );
-    }
-
     @GetMapping("/product/{id}")
     public ResponseEntity<ProductResponse> product(@PathVariable String id){
         Product product = productRepository.findById(id).orElseThrow(()-> new ItemNotFoundException("Product Not Found"));
         return ResponseEntity.ok(new ProductResponse(product));
     }
 
-    @GetMapping("/search")
+    @GetMapping("/products")
     public ResponseEntity<List<ProductResponse>> searchProducts(
-            @RequestParam(value = "category",required = false) String category,
-            @RequestParam(value = "name",required = false) String name,
+            @RequestParam(value = "category", required = false) String category,
+            @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "priceFrom", required = false) Double priceFrom,
-            @RequestParam(value = "priceTo", required = false) Double priceTo){
-        List<ProductResponse> productResponses = new ArrayList<>();
+            @RequestParam(value = "priceTo", required = false) Double priceTo,
+            @RequestParam(value = "availability", required = false) String availability,
+            @RequestParam(value = "color", required = false) String color,
+            @RequestParam(value = "size", required = false) String size) {
 
-        if (category!=null && name != null) {
-            productResponses = productRepository.findProductsByProductNameLikeIgnoreCaseAndCategory(
-                            name,
-                            categoryRepository.findByCategory(category)
-                                    .orElseThrow(() -> new ItemNotFoundException("Category Not Found"))
-                    ).stream()
-                    .map(ProductResponse::new)
-                    .toList();
-        } else if (name!=null) {
-            productResponses = productRepository.findProductsByProductNameLikeIgnoreCase(
-                            name).stream()
-                    .map(ProductResponse::new)
-                    .toList();
-        } else if (category!=null) {
-            productResponses = productRepository.findProductsByCategory(
-                            categoryRepository.findByCategory(category)
-                                    .orElseThrow(() -> new ItemNotFoundException("Category Not Found"))
-                    ).stream()
-                    .map(ProductResponse::new)
-                    .toList();
-        } else if (priceFrom!=null && priceTo !=null) {
-            productResponses = productRepository.findAllByPriceBetween(priceFrom-0.001, priceTo+0.001)
-                    .stream()
-                    .map(ProductResponse::new)
-                    .toList();
+        Query query = new Query();
+
+        if (category != null) {
+            Category category1 = categoryRepository.findByCategory(category)
+                            .orElseThrow(()->new ItemNotFoundException("Category Not Found"));
+            query.addCriteria(Criteria.where("category").is(category1));
         }
-        return ResponseEntity.ok(productResponses);
-                
-    }
-    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
-    @GetMapping("/order/{id}")
-    public ResponseEntity<OrderResponse> orderDetails(@PathVariable String id){
-        String name = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findUserByUsername(name)
-                .orElseThrow(() -> new UserNotFoundException("User Not Found"));
-        Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new ItemNotFoundException("Order Not Found"));
-        if (user.getRole() == UserRole.ROLE_ADMIN || user.getId().equals(order.getUserId()))
-            return ResponseEntity.ok(orderService.orderDetails(id));
-        else{
-            throw new AccessDeniedException("You Dont Have Access");
+
+        if (name != null) {
+            query.addCriteria(Criteria.where("productName").regex(name, "i"));
         }
+
+        if (priceFrom != null && priceTo != null) {
+            query.addCriteria(Criteria.where("price").gte(priceFrom).lte(priceTo));
+        }
+
+        if (availability != null){
+            if (availability.equals("true"))
+                query.addCriteria(Criteria.where("quantity").gte(0));
+            else
+                query.addCriteria(Criteria.where("quantity").is(0));
+        }
+
+        if (color!= null){
+            query.addCriteria(Criteria.where("color").is(color));
+        }
+        if (size!= null){
+            query.addCriteria(Criteria.where("size").is(size));
+        }
+
+        List<Product> products = mongoOperations.find(query, Product.class);
+        return ResponseEntity.ok(products
+                .stream()
+                .map(ProductResponse::new)
+                .toList());
     }
+
+
 }

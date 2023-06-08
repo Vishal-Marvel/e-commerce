@@ -70,8 +70,6 @@ public class OrderService {
                         DiscountCoupon coupon = discountCouponRepository.findByCouponCode(request.getCoupon())
                                 .orElseThrow(() ->new ItemNotFoundException("Coupon Not Exits"));
                         orderItem.setPrice(product.getPrice() - product.getPrice()*coupon.getDiscountPercentage());
-
-
                     }
                     else{
                         orderItem.setPrice(product.getPrice());

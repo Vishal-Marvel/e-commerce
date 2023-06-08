@@ -24,8 +24,14 @@ public class ProductRequest {
     private String productName;
     @NotBlank(message = "Description is necessary")
     private String productDescription;
-    @NotBlank(message = "Price is necessary")
-    private Double productPrice;
+    @NotBlank(message = "Cost Price is necessary")
+    private Double costPrice;
+    @NotBlank(message = "Profit Percentage is necessary")
+    private Integer profitPercentage;
+    @NotBlank(message = "MRP is necessary")
+    private Double MRP;
+    @NotBlank(message = "Discount Percentage is necessary")
+    private Double discountPercentage;
     @NotBlank(message = "Category is necessary")
     private String category;
     private List<MultipartFile> productPics;

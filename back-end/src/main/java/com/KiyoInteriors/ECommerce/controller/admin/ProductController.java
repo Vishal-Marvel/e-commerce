@@ -1,5 +1,6 @@
 package com.KiyoInteriors.ECommerce.controller.admin;
 
+import com.KiyoInteriors.ECommerce.DTO.Request.DiscountRequest;
 import com.KiyoInteriors.ECommerce.DTO.Request.ProductRequest;
 import com.KiyoInteriors.ECommerce.DTO.Response.MiscResponse;
 import com.KiyoInteriors.ECommerce.entity.Product;
@@ -45,6 +46,12 @@ public class ProductController {
                 .orElseThrow(() -> new ItemNotFoundException("Product Not Found"));
         productRepository.delete(product);
         return ResponseEntity.ok(MiscResponse.builder().response("Product Deleted").build());
+    }
+
+    @PostMapping("/create-discounts")
+    public ResponseEntity<MiscResponse> createDiscounts(@RequestBody DiscountRequest discountRequest){
+        service.createDiscounts(discountRequest);
+        return ResponseEntity.ok(MiscResponse.builder().response("Discounts Created").build());
     }
 
 }

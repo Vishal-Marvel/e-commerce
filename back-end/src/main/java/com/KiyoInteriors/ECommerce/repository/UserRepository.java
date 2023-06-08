@@ -1,5 +1,6 @@
 package com.KiyoInteriors.ECommerce.repository;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Repository;
 import com.KiyoInteriors.ECommerce.entity.User;
@@ -18,4 +19,5 @@ public interface UserRepository extends MongoRepository<User, String>
 
     Optional<User> findUserByUsernameOrEmail(String username, String email);
     Optional<User> findUserByOTP(String otp);
+    List<User> findAllByActive(boolean active);
 }

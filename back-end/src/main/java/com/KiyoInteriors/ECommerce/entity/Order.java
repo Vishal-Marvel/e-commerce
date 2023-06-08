@@ -26,7 +26,6 @@ public class Order {
     private List<OrderItem> orderItems;
     private Double total;
     private String paymentStatus;
-    private String coupon;
     private String orderStatus;
     public Order(String userId) {
         this.userId = userId;

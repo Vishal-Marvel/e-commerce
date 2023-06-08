@@ -112,7 +112,7 @@ public class CartService {
             cartProductsResponseList.add(CartProductsResponse.builder()
                     .itemId(cartItem.getId())
                     .name(product.getProductName())
-                    .price(product.getProductPrice())
+                    .price(product.getPrice())
                     .image(product.getProductPics().get(0))
                     .model(product.getModel())
                     .color(cartItem.getColor())

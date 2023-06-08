@@ -17,5 +17,6 @@ public interface ProductRepository extends MongoRepository<Product, String> {
     List<Product> findProductsByCategory(Category category);
     List<Product> findProductsByProductNameLikeIgnoreCase(String name);
     List<Product> findProductsByProductNameLikeIgnoreCaseAndCategory(String name, Category category);
-    List<Product> findProductsByProductPriceBetween(Double from, Double to);
+    List<Product> findAllByPriceBetween(Double from, Double to);
+    List<Product> findAllByCouponsContains(String couponCode);
 }

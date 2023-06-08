@@ -8,6 +8,7 @@ import com.KiyoInteriors.ECommerce.DTO.Response.OrderResponses;
 import com.KiyoInteriors.ECommerce.entity.*;
 import com.KiyoInteriors.ECommerce.exceptions.ItemNotFoundException;
 import com.KiyoInteriors.ECommerce.repository.CartRepository;
+import com.KiyoInteriors.ECommerce.repository.DiscountCouponRepository;
 import com.KiyoInteriors.ECommerce.repository.OrderRepository;
 import com.KiyoInteriors.ECommerce.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
@@ -39,13 +40,13 @@ public class OrderService {
     private final CartRepository cartRepository;
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
+    private final DiscountCouponRepository discountCouponRepository;
 
     public void createOrder(User user, OrderRequest request) {
         Cart cart = cartRepository.findCartByUserId(user.getId())
                 .orElseThrow(()->new ItemNotFoundException("Cart Not Found"));
         Order order = new Order(user.getId());
         order.setOrderDate(new Date());
-        order.setCoupon(request.getCoupon());
         order.setBillingAddress(request.getBillingAddress());
         order.setShippingAddress(request.getShippingAddress());
         order.setOrderItems(request.getItems()
@@ -54,14 +55,26 @@ public class OrderService {
                     CartItem cartItem = cart.getCartItem().get(id);
                     Product product = productRepository.findById(cartItem.getProductId())
                             .orElseThrow(() -> new ItemNotFoundException("Product Not Found"));
-                    return OrderItem.builder()
+                    OrderItem orderItem =  OrderItem.builder()
                             .id(UUID.randomUUID().toString())
                             .productId(cartItem.getProductId())
-                            .price(product.getProductPrice())
                             .quantity(cartItem.getQuantity())
                             .size(cartItem.getSize())
                             .color(cartItem.getColor())
                             .build();
+
+                    if (product.getCoupons().contains(request.getCoupon())){
+                        DiscountCoupon coupon = discountCouponRepository.findByCouponCode(request.getCoupon())
+                                .orElseThrow(() ->new ItemNotFoundException("Coupon Not Exits"));
+                        orderItem.setPrice(product.getPrice() - product.getPrice()*coupon.getDiscountPercentage());
+
+
+                    }
+                    else{
+                        orderItem.setPrice(product.getPrice());
+                    }
+                    return orderItem;
+
                 })
                 .toList());
         order.setTotal(request.getItems().stream()
@@ -69,7 +82,12 @@ public class OrderService {
                             CartItem cartItem = cart.getCartItem().get(id);
                             Product product = productRepository.findById(cartItem.getProductId())
                                     .orElseThrow(() -> new ItemNotFoundException("Product Not Found"));
-                            return product.getProductPrice();
+                            if (product.getCoupons().contains(request.getCoupon())){
+                                DiscountCoupon coupon = discountCouponRepository.findByCouponCode(request.getCoupon())
+                                        .orElseThrow(() ->new ItemNotFoundException("Coupon Not Exits"));
+                                 return (product.getPrice() - product.getPrice()*coupon.getDiscountPercentage());
+                            }
+                            return product.getPrice();
                         })
                         .sum());
         orderRepository.save(order);

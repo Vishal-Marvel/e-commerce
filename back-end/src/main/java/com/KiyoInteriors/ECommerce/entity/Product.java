@@ -4,10 +4,8 @@ import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
+
 /**
  * This class represents a product entity that can be stored in a database.
  * It has various attributes that describe the product, such as name, description, prize, sizes, colors, model, category and pictures.
@@ -20,7 +18,11 @@ public class Product {
     private String id = UUID.randomUUID().toString();
     private String productName;
     private String productDescription;
-    private Double productPrice;
+    private Double costPrice;
+    private Double profitPercentage;
+    private Double MRP;
+    private List<String> coupons = new ArrayList<>();
+    private Double price;
     private List<String> sizes;
     private List<String> colors;
     private String model;

@@ -104,7 +104,7 @@ public class PublicController {
                     .map(ProductResponse::new)
                     .toList();
         } else if (priceFrom!=null && priceTo !=null) {
-            productResponses = productRepository.findProductsByProductPriceBetween(priceFrom-0.001, priceTo+0.001)
+            productResponses = productRepository.findAllByPriceBetween(priceFrom-0.001, priceTo+0.001)
                     .stream()
                     .map(ProductResponse::new)
                     .toList();

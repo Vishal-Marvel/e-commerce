@@ -130,8 +130,9 @@ public class AuthenticationService {
         user.setOTPLimit(new Date(new Date().getTime()+1000*60*60));
         String otp = UUID.randomUUID().toString();
         user.setOTP(otp);
-        userRepository.save(user);
+
         emailService.sendVerificationEmail(user.getEmail(), otp, purpose, endpoint);
+        userRepository.save(user);
 
     }
 

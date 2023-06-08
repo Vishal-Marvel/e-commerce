@@ -55,6 +55,9 @@ public class OrderService {
                     CartItem cartItem = cart.getCartItem().get(id);
                     Product product = productRepository.findById(cartItem.getProductId())
                             .orElseThrow(() -> new ItemNotFoundException("Product Not Found"));
+                    if (cartItem.getQuantity() > product.getQuantity()) {
+                        throw new ItemNotFoundException("Quantity insufficient");
+                    }
                     OrderItem orderItem =  OrderItem.builder()
                             .id(UUID.randomUUID().toString())
                             .productId(cartItem.getProductId())

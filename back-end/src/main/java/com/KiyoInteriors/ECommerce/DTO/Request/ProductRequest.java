@@ -5,6 +5,7 @@ import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+
 /**
  * This class represents a product request that contains the information
  * about a product to be added to the online store.
@@ -14,9 +15,12 @@ import java.util.List;
  * - productPrize: the price of the product in dollars
  * - category: the category of the product (e.g. clothing, electronics, etc.)
  * - productPics: a list of files that contain the images of the product
- * - model: an optional field that specifies the model of the product (e.g. iPhone 14, Nike Air Max, etc.)
- * - sizes: an optional list of strings that indicate the available sizes of the product (e.g. S, M, L, XL, etc.)
- * - colors: an optional list of strings that indicate the available colors of the product (e.g. black, white, red, etc.)
+ * - model: an optional field that specifies the model of the product (e.g.
+ * iPhone 14, Nike Air Max, etc.)
+ * - sizes: an optional list of strings that indicate the available sizes of the
+ * product (e.g. S, M, L, XL, etc.)
+ * - colors: an optional list of strings that indicate the available colors of
+ * the product (e.g. black, white, red, etc.)
  */
 @Data
 public class ProductRequest {
@@ -34,6 +38,8 @@ public class ProductRequest {
     private Double discountPercentage;
     @NotBlank(message = "Category is necessary")
     private String category;
+    @NotBlank(message = "Quantity is necessary")
+    private Integer quantity;
     private List<MultipartFile> productPics;
     private String model;
     private List<String> sizes;

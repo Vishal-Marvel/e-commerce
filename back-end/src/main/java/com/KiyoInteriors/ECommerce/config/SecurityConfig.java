@@ -23,27 +23,27 @@ import org.springframework.context.annotation.Configuration;
 @RequiredArgsConstructor
 /**
  * This class provides the security configuration for the application.
- * It defines the authentication and authorization rules for different endpoints and roles.
- * It also configures the password encoder, the authentication manager, and the JWT filter and entry point.
+ * It defines the authentication and authorization rules for different endpoints
+ * and roles.
+ * It also configures the password encoder, the authentication manager, and the
+ * JWT filter and entry point.
  */
-public class SecurityConfig
-{
+public class SecurityConfig {
     private final JWTAuthFilter authFilter;
     private final JWTAuthEntryPoint authEntryPoint;
 
     @Bean
     SecurityFilterChain securityFilterChain(final HttpSecurity httpSecurity) throws Exception {
         return httpSecurity.csrf().disable()
-                .authorizeHttpRequests(auth->auth
+                .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/admin/**").hasAuthority(UserRole.ROLE_ADMIN.name())
                         .requestMatchers("/user/**").hasAuthority(UserRole.ROLE_USER.name())
                         .anyRequest().permitAll())
                 .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(authEntryPoint))
-//                .addFilterAfter(authFilter, ExceptionTranslationFilter.class)
+                // .addFilterAfter(authFilter, ExceptionTranslationFilter.class)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .build();
-
 
     }
 

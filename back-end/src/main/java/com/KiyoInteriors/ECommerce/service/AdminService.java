@@ -17,14 +17,18 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+
 /**
-
-The "AdminService" class is responsible for handling administrative operations related to categories and products.
-
-It interacts with the "CategoryRepository" and "ProductRepository" to perform CRUD operations on categories and products.
-
-addCategory(CategoryRequest request): Adds a new category based on the provided category request.
-*/
+ * 
+ * The "AdminService" class is responsible for handling administrative
+ * operations related to categories and products.
+ * 
+ * It interacts with the "CategoryRepository" and "ProductRepository" to perform
+ * CRUD operations on categories and products.
+ * 
+ * addCategory(CategoryRequest request): Adds a new category based on the
+ * provided category request.
+ */
 @RequiredArgsConstructor
 @Service
 public class AdminService {
@@ -35,9 +39,9 @@ public class AdminService {
     private final ImageService imageService;
     private final UserRepository userRepository;
 
-    public void addCategory(CategoryRequest request){
+    public void addCategory(CategoryRequest request) {
         Optional<Category> tempCategory = categoryRepository.findByCategory(request.getCategory());
-        if(tempCategory.isPresent()){
+        if (tempCategory.isPresent()) {
             throw new ConstraintException("Category Already Exists");
         }
         Category category = new Category();
@@ -45,9 +49,9 @@ public class AdminService {
         categoryRepository.save(category);
     }
 
-    public void updateCategory(String name, CategoryRequest request){
+    public void updateCategory(String name, CategoryRequest request) {
         Category category = categoryRepository.findByCategory(name)
-                .orElseThrow(()->new ItemNotFoundException("Category Not Found"));
+                .orElseThrow(() -> new ItemNotFoundException("Category Not Found"));
         category.setCategory(request.getCategory());
         categoryRepository.save(category);
     }
@@ -57,7 +61,7 @@ public class AdminService {
         newProduct.setCategory(categoryRepository
                 .findByCategory(productRequest
                         .getCategory())
-                .orElseThrow(()->new ItemNotFoundException("Category Not Found")));
+                .orElseThrow(() -> new ItemNotFoundException("Category Not Found")));
         newProduct.setProductName(productRequest.getProductName());
         newProduct.setCostPrice(productRequest.getCostPrice());
         newProduct.setProfitPercentage(productRequest.getProfitPercentage()/100.0);
@@ -67,7 +71,8 @@ public class AdminService {
         newProduct.setColors(productRequest.getColors());
         newProduct.setSizes(productRequest.getSizes());
         newProduct.setModel(productRequest.getModel());
-        if (productRequest.getProductPics()!=null) {
+        newProduct.setQuantity(productRequest.getQuantity());
+        if (productRequest.getProductPics() != null) {
             List<Image> images = new ArrayList<>();
             for (MultipartFile file : productRequest.getProductPics()) {
 
@@ -78,13 +83,13 @@ public class AdminService {
         productRepository.save(newProduct);
     }
 
-    public void updateProduct(String id, ProductRequest productRequest) throws IOException{
+    public void updateProduct(String id, ProductRequest productRequest) throws IOException {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ItemNotFoundException("Product Not Found"));
         product.setCategory(categoryRepository
                 .findByCategory(productRequest
                         .getCategory())
-                .orElseThrow(()->new ItemNotFoundException("Category Not Found")));
+                .orElseThrow(() -> new ItemNotFoundException("Category Not Found")));
         product.setProductName(productRequest.getProductName());
         product.setCostPrice(productRequest.getCostPrice());
         product.setMRP(productRequest.getMRP());
@@ -94,7 +99,8 @@ public class AdminService {
         product.setColors(productRequest.getColors());
         product.setSizes(productRequest.getSizes());
         product.setModel(productRequest.getModel());
-        if (productRequest.getProductPics()!=null) {
+        product.setQuantity(productRequest.getQuantity());
+        if (productRequest.getProductPics() != null) {
             List<Image> images = new ArrayList<>();
             for (MultipartFile file : productRequest.getProductPics()) {
 

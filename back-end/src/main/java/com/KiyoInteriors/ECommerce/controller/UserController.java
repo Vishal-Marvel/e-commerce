@@ -21,6 +21,7 @@ import jakarta.validation.Valid;
 import com.KiyoInteriors.ECommerce.entity.User;
 import org.springframework.http.ResponseEntity;
 import com.KiyoInteriors.ECommerce.service.UserService;
+import com.KiyoInteriors.ECommerce.service.WishlistService;
 
 import java.io.IOException;
 import java.util.Date;
@@ -58,7 +59,7 @@ public class UserController
     private final OrderRepository orderRepository;
     private final OrderService orderService;
     private final ProductReviewService productReviewService;
-
+    private final WishlistService wishlistSevice;
 
     @GetMapping
     public ResponseEntity<UserResponse> getUser() {
@@ -82,8 +83,6 @@ public class UserController
         String name  = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findUserByUsername(name)
                 .orElseThrow(()->new UserNotFoundException("User Not Found"));
-
-        cartRepository.delete(cartRepository.findCartByUserId(user.getId()).get());
         userRepository.delete(user);
         return ResponseEntity.ok(MiscResponse.builder().response("User Deleted").build());
     }
@@ -174,5 +173,21 @@ public class UserController
         else{
             throw new AccessDeniedException("You Dont Have Access");
         }
-    }
+
+        @PostMapping("/wishlist")
+        public ResponseEntity<MiscResponse> addToWishlist(@RequestBody WishlistRequest wishlistRequest) {
+                String name = SecurityContextHolder.getContext().getAuthentication().getName();
+                User user = userRepository.findUserByUsername(name)
+                                .orElseThrow(() -> new UserNotFoundException("User not Found"));
+                return ResponseEntity.ok(MiscResponse.builder()
+                                .response(wishlistSevice.addItemToWishlist(user, wishlistRequest)).build());
+        }
+
+        @GetMapping("/wishlist")
+        public ResponseEntity<List<WishlistResponse>> showAllOrders() {
+                String name = SecurityContextHolder.getContext().getAuthentication().getName();
+                User user = userRepository.findUserByUsername(name)
+                                .orElseThrow(() -> new UserNotFoundException("User not Found"));
+                return ResponseEntity.ok(wishlistSevice.displayWishlist(user));
+        }
 }

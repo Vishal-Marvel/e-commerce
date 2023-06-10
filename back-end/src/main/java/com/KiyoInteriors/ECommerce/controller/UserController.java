@@ -3,10 +3,8 @@ package com.KiyoInteriors.ECommerce.controller;
 import com.KiyoInteriors.ECommerce.DTO.Request.*;
 import com.KiyoInteriors.ECommerce.DTO.Response.*;
 import com.KiyoInteriors.ECommerce.entity.Order;
-import com.KiyoInteriors.ECommerce.entity.UserRole;
 import com.KiyoInteriors.ECommerce.exceptions.ItemNotFoundException;
 import com.KiyoInteriors.ECommerce.exceptions.UserNotFoundException;
-import com.KiyoInteriors.ECommerce.repository.CartRepository;
 import com.KiyoInteriors.ECommerce.repository.OrderRepository;
 import com.KiyoInteriors.ECommerce.repository.UserRepository;
 import com.KiyoInteriors.ECommerce.service.CartService;
@@ -21,7 +19,7 @@ import jakarta.validation.Valid;
 import com.KiyoInteriors.ECommerce.entity.User;
 import org.springframework.http.ResponseEntity;
 import com.KiyoInteriors.ECommerce.service.UserService;
-import com.KiyoInteriors.ECommerce.service.WishlistSevice;
+import com.KiyoInteriors.ECommerce.service.WishlistService;
 
 import java.io.IOException;
 import java.util.List;
@@ -60,7 +58,7 @@ public class UserController {
         private final OrderRepository orderRepository;
         private final OrderService orderService;
         private final ProductReviewService productReviewService;
-        private final WishlistSevice wishlistSevice;
+        private final WishlistService wishlistSevice;
 
         @GetMapping
         public ResponseEntity<UserResponse> getUser() {

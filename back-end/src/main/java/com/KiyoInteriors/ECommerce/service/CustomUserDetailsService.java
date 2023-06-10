@@ -3,6 +3,7 @@ package com.KiyoInteriors.ECommerce.service;
 import com.KiyoInteriors.ECommerce.entity.User;
 import com.KiyoInteriors.ECommerce.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,7 +11,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.nio.file.AccessDeniedException;
 import java.util.Collections;
 import java.util.List;
 
@@ -31,13 +31,8 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String usernameOrEmail) throws UsernameNotFoundException {
         User user = userRepository.findUserByUsernameOrEmail(usernameOrEmail, usernameOrEmail)
                 .orElseThrow(() -> new UsernameNotFoundException("User Not Found"));
-        if(!user.isActive()){
-
-            try {
-                throw new AccessDeniedException("User is Not Verified");
-            } catch (AccessDeniedException e) {
-                throw new RuntimeException(e);
-            }
+        if (!user.isVerified()) {
+            throw new AccessDeniedException("User is Not Verified");
 
         }
         List<GrantedAuthority> authorities = Collections

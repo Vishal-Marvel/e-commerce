@@ -23,6 +23,7 @@ import org.springframework.http.ResponseEntity;
 import com.KiyoInteriors.ECommerce.service.UserService;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -53,6 +54,7 @@ public class UserController
     private final UserService userService;
     private final UserRepository userRepository;
     private final CartService cartService;
+    private final CartRepository cartRepository;
     private final OrderRepository orderRepository;
     private final OrderService orderService;
     private final ProductReviewService productReviewService;
@@ -80,6 +82,8 @@ public class UserController
         String name  = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findUserByUsername(name)
                 .orElseThrow(()->new UserNotFoundException("User Not Found"));
+
+        cartRepository.delete(cartRepository.findCartByUserId(user.getId()).get());
         userRepository.delete(user);
         return ResponseEntity.ok(MiscResponse.builder().response("User Deleted").build());
     }
@@ -142,11 +146,13 @@ public class UserController
     }
 
     @GetMapping("/order")
-    public ResponseEntity<List<OrderResponses>> orders(){
+    public ResponseEntity<List<OrderResponses>> orders(
+            @RequestParam(value = "date", required = false) Date date
+    ){
         String name = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findUserByUsername(name)
                 .orElseThrow(()->new UserNotFoundException("User not Found"));
-        return ResponseEntity.ok(orderService.displayAllOrder(user.getId()));
+        return ResponseEntity.ok(orderService.displayAllOrder(date, user.getId()));
     }
 
     @PostMapping("/product/review")

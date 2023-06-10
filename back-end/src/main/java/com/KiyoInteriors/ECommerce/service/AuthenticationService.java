@@ -63,7 +63,7 @@ public class AuthenticationService {
         user.setAddresses(userDTO.getAddresses());
         user.setPhoto(imageService.compressImage(userDTO.getPhoto()));
         user.setRole(UserRole.ROLE_USER);
-        user.setActive(false);
+        user.setVerified(false);
         sendMail(user, "verify", "Registration");
         userRepository.save(user);
         Cart cart = new Cart(user.getId());
@@ -76,7 +76,7 @@ public class AuthenticationService {
         User user = userRepository.findUserByUsernameOrEmail(
                 loginDTO.getUsernameOrEmail(), loginDTO.getUsernameOrEmail())
                 .orElseThrow(() -> new UsernameNotFoundException("User Not found"));
-        if (!user.isActive()){
+        if (!user.isVerified()){
             throw new AccessDeniedException("User not Verified");
         }
         SecurityContextHolder.getContext().setAuthentication(auth);
@@ -95,10 +95,10 @@ public class AuthenticationService {
         if(new Date().after(user.getOTPLimit())){
             throw new AccessDeniedException("Code Expired");
         }
-        if(user.isActive()){
+        if(user.isVerified()){
             throw new Exception("User Already Activated");
         }
-        user.setActive(true);
+        user.setVerified(true);
         user.setOTP(null);
         user.setOTPLimit(null);
         userRepository.save(user);

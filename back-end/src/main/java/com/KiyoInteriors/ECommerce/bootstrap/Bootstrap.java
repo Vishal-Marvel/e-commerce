@@ -2,6 +2,7 @@ package com.KiyoInteriors.ECommerce.bootstrap;
 
 import com.KiyoInteriors.ECommerce.entity.UserRole;
 import com.KiyoInteriors.ECommerce.entity.User;
+import com.KiyoInteriors.ECommerce.service.AdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import com.KiyoInteriors.ECommerce.repository.UserRepository;
@@ -17,6 +18,7 @@ public class Bootstrap implements CommandLineRunner
 {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AdminService service;
 
     public void run(final String... args) throws Exception {
         if (userRepository.findAll().size() == 0L) {
@@ -25,9 +27,13 @@ public class Bootstrap implements CommandLineRunner
             user.setName("admin");
             user.setPassword(passwordEncoder.encode("password"));
             user.setRole(UserRole.ROLE_ADMIN);
-            user.setActive(true);
+            user.setVerified(true);
             userRepository.save(user);
         }
+        service.deleteCarts();
+        service.removeCoupons();
+        service.removeInActiveUsers();
+
     }
 
 }

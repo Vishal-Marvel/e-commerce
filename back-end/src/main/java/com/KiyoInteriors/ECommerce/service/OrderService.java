@@ -12,10 +12,14 @@ import com.KiyoInteriors.ECommerce.repository.DiscountCouponRepository;
 import com.KiyoInteriors.ECommerce.repository.OrderRepository;
 import com.KiyoInteriors.ECommerce.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -40,6 +44,7 @@ public class OrderService {
     private final CartRepository cartRepository;
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
+    private final MongoOperations mongoOperations;
     private final DiscountCouponRepository discountCouponRepository;
 
     public void createOrder(User user, OrderRequest request) {
@@ -59,7 +64,7 @@ public class OrderService {
                         throw new ItemNotFoundException("Quantity insufficient");
                     }
                     OrderItem orderItem =  OrderItem.builder()
-                            .id(UUID.randomUUID().toString())
+                            .id(cartItem.getId())
                             .productId(cartItem.getProductId())
                             .quantity(cartItem.getQuantity())
                             .size(cartItem.getSize())
@@ -78,6 +83,7 @@ public class OrderService {
 
                 })
                 .toList());
+        order.setOrderStatus("PENDING");
         order.setTotal(request.getItems().stream()
                         .mapToDouble(id->{
                             CartItem cartItem = cart.getCartItem().get(id);
@@ -92,6 +98,31 @@ public class OrderService {
                         })
                         .sum());
         orderRepository.save(order);
+        updateProductQuantity(order);
+        removeCartItems(order);
+    }
+
+    private void removeCartItems(Order order) {
+        if (Objects.equals(order.getOrderStatus(), "PLACED")){
+            Cart cart = cartRepository.findCartByUserId(order.getUserId())
+                    .orElseThrow(() -> new ItemNotFoundException("Cart Not Found"));
+            for (OrderItem orderItem : order.getOrderItems()){
+                cart.getCartItem().remove(orderItem.getId());
+            }
+            cartRepository.save(cart);
+
+        }
+    }
+
+    private void updateProductQuantity(Order order) {
+        if (Objects.equals(order.getOrderStatus(), "PLACED")) {
+            for (OrderItem item : order.getOrderItems()) {
+                Product product = productRepository.findById(item.getProductId())
+                        .orElseThrow(() -> new ItemNotFoundException("Product Not Found"));
+                product.setQuantity(product.getQuantity() - item.getQuantity());
+                productRepository.save(product);
+            }
+        }
     }
 
     public void orderStatusUpdateAdmin(UpdateOrderRequest request) {
@@ -101,71 +132,20 @@ public class OrderService {
         orderRepository.save(order);
     }
 
-    public List<OrderResponses> displayAllOrder() {
-        List<Order> orders = orderRepository.findAll();
+    public List<OrderResponses> displayAllOrder(Date date, String id) {
+        Query query = new Query();
+        if (date!= null){
+            query.addCriteria(Criteria.where("orderDate").gte(date).lte(new Date(date.getTime() + 1000*60*60*24)));
+        }
+        if (id!=null){
+            query.addCriteria(Criteria.where("userId").is(id));
+        }
+        List<Order> orders = mongoOperations.find(query, Order.class);
         return orders.stream()
                 .map(order -> {
                     OrderResponses orderResponse = new OrderResponses();
                     orderResponse.setOrderId(order.getId());
-                    orderResponse.setOrderStatus(order.getOrderStatus());
-                    orderResponse.setAmount(order.getTotal());
-                    orderResponse.setItems(order.getOrderItems()
-                            .stream()
-                            .map(orderItem -> {
-                                Product product = productRepository.findById(orderItem.getProductId())
-                                        .orElseThrow(() -> new ItemNotFoundException("Product Not Found"));
-                                return CartProductsResponse.builder()
-                                        .quantity(orderItem.getQuantity())
-                                        .model(product.getModel())
-                                        .size(orderItem.getSize())
-                                        .color(orderItem.getColor())
-                                        .price(orderItem.getPrice())
-                                        .name(product.getProductName())
-                                        .image(product.getProductPics().get(0))
-                                        .itemId(orderItem.getId())
-                                        .build();
-                            })
-                            .toList());
-                    return orderResponse;
-                })
-                .toList();
-    }
-    public List<OrderResponses> displayAllOrder(String id) {
-        List<Order> orders = orderRepository.findAllByUserId(id);
-        return orders.stream()
-                .map(order -> {
-                    OrderResponses orderResponse = new OrderResponses();
-                    orderResponse.setOrderId(order.getId());
-                    orderResponse.setOrderStatus(order.getOrderStatus());
-                    orderResponse.setAmount(order.getTotal());
-                    orderResponse.setItems(order.getOrderItems()
-                            .stream()
-                            .map(orderItem -> {
-                                Product product = productRepository.findById(orderItem.getProductId())
-                                        .orElseThrow(() -> new ItemNotFoundException("Product Not Found"));
-                                return CartProductsResponse.builder()
-                                        .quantity(orderItem.getQuantity())
-                                        .model(product.getModel())
-                                        .size(orderItem.getSize())
-                                        .color(orderItem.getColor())
-                                        .price(orderItem.getPrice())
-                                        .name(product.getProductName())
-                                        .image(product.getProductPics().get(0))
-                                        .itemId(orderItem.getId())
-                                        .build();
-                            })
-                            .toList());
-                    return orderResponse;
-                })
-                .toList();
-    }
-
-    public List<OrderResponses> displayAllOrder(Date date) {
-        List<Order> orders = orderRepository.findAllByOrderDateAfter(date);
-        return orders.stream()
-                .map(order -> {
-                    OrderResponses orderResponse = new OrderResponses();
-                    orderResponse.setOrderId(order.getId());
+                    orderResponse.setOrderDate(order.getOrderDate());
                     orderResponse.setOrderStatus(order.getOrderStatus());
                     orderResponse.setAmount(order.getTotal());
                     orderResponse.setItems(order.getOrderItems()

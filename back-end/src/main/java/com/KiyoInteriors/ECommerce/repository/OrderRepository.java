@@ -20,5 +20,5 @@ includes additional custom methods specific to order management.
 */
 public interface OrderRepository extends MongoRepository<Order, String> {
     List<Order> findAllByUserId(String id);
-    List<Order> findAllByOrderDateAfter(Date date);
+    List<Order> findAllByOrderDateAfter(Date orderDate);
 }

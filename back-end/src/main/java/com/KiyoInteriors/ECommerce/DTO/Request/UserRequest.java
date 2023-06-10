@@ -1,5 +1,6 @@
 package com.KiyoInteriors.ECommerce.DTO.Request;
 
+import com.KiyoInteriors.ECommerce.entity.Address;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,7 +27,7 @@ public class UserRequest {
     private String password;
     @NotBlank(message = "Mobile Number is necessary")
     private String mobile;
-    private List<String> addresses;
+    private List<Address> addresses;
     private MultipartFile photo;
     @NotBlank(message = "Email is necessary")
     private String email;

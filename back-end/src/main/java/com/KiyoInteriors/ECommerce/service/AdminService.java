@@ -8,15 +8,16 @@ import com.KiyoInteriors.ECommerce.exceptions.ItemNotFoundException;
 import com.KiyoInteriors.ECommerce.exceptions.ConstraintException;
 import com.KiyoInteriors.ECommerce.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * 
@@ -32,12 +33,14 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Service
 public class AdminService {
+    SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
     private final CategoryRepository categoryRepository;
     private final ProductRepository productRepository;
     private final DiscountCouponRepository discountCouponRepository;
     private final CartRepository cartRepository;
     private final ImageService imageService;
     private final UserRepository userRepository;
+    private final MongoOperations mongoOperations;
 
     public void addCategory(CategoryRequest request) {
         Optional<Category> tempCategory = categoryRepository.findByCategory(request.getCategory());
@@ -125,6 +128,7 @@ public class AdminService {
         }
         discountCouponRepository.save(discountCoupon);
     }
+
     @Scheduled(cron = "0 0 0 * * ?") // Runs at midnight every day
     public void removeCoupons(){
         for (DiscountCoupon coupon: discountCouponRepository.findAll()){
@@ -142,11 +146,41 @@ public class AdminService {
 
     @Scheduled(cron = "0 0 0 * * ?")
     public void removeInActiveUsers(){
-        for (User user: userRepository.findAllByActive(false)){
+        for (User user: userRepository.findAllByVerified(false)){
             if (user.getOTPLimit().before(new Date())){
                 cartRepository.delete(cartRepository.findCartByUserId(user.getId()).get());
                 userRepository.delete(user);
             }
         }
+    }
+
+    @Scheduled(cron = "0 0 0 * * ?")
+    public void deleteCarts(){
+        for (Cart cart: cartRepository.findAll()){
+            Optional<User> user = userRepository.findById(cart.getUserId());
+            if (user.isEmpty()){
+                cartRepository.delete(cart);
+            }
+        }
+    }
+
+    public Map<String, Double> getProfits(Date dateFrom, Date dateTo) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("orderDate").gte(dateFrom).lte(new Date(dateTo.getTime() + 1000*60*60*24)));
+        List<Order> orders = mongoOperations.find(query, Order.class);
+        Map<String, Double> profits = new HashMap<>();
+        for (Order order : orders){
+
+             Double profit = order.getOrderItems().stream()
+                    .mapToDouble(orderItem ->{
+                        Product product = productRepository.findById(orderItem.getProductId())
+                                .orElseThrow(()-> new ItemNotFoundException("Product Not Found"));
+                        return orderItem.getPrice() - product.getCostPrice();
+                    })
+                    .sum();
+             profits.put(dateFormat.format(order.getOrderDate()),
+                     profits.getOrDefault(dateFormat.format(order.getOrderDate()), 0.0) +profit);
+        }
+        return profits;
     }
 }

@@ -14,9 +14,5 @@ The "Product" entity represents a product in a system.
 This interface defines several custom query methods for retrieving products based on different criteria.
 */
 public interface ProductRepository extends MongoRepository<Product, String> {
-    List<Product> findProductsByCategory(Category category);
-    List<Product> findProductsByProductNameLikeIgnoreCase(String name);
-    List<Product> findProductsByProductNameLikeIgnoreCaseAndCategory(String name, Category category);
-    List<Product> findAllByPriceBetween(Double from, Double to);
     List<Product> findAllByCouponsContains(String couponCode);
 }

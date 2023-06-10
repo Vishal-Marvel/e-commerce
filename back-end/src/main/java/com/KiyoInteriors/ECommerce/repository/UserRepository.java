@@ -19,5 +19,5 @@ public interface UserRepository extends MongoRepository<User, String>
 
     Optional<User> findUserByUsernameOrEmail(String username, String email);
     Optional<User> findUserByOTP(String otp);
-    List<User> findAllByActive(boolean active);
+    List<User> findAllByVerified(boolean active);
 }

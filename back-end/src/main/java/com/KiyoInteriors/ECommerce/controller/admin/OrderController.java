@@ -9,6 +9,7 @@ import com.KiyoInteriors.ECommerce.exceptions.ItemNotFoundException;
 import com.KiyoInteriors.ECommerce.exceptions.UserNotFoundException;
 import com.KiyoInteriors.ECommerce.repository.OrderRepository;
 import com.KiyoInteriors.ECommerce.repository.UserRepository;
+import com.KiyoInteriors.ECommerce.service.AdminService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -23,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -33,6 +35,7 @@ import java.util.List;
 public class OrderController {
     private final OrderService orderService;
     private final OrderRepository orderRepository;
+    private final AdminService service;
 
     @PutMapping("/update-status")
     public ResponseEntity<MiscResponse> updateOrderStatus(@RequestBody UpdateOrderRequest updateOrderRequest) {
@@ -50,12 +53,18 @@ public class OrderController {
 
     @GetMapping
     public ResponseEntity<List<OrderResponses>> getAllOrders(
-            @RequestParam(value = "data", required = false) Date date
+            @RequestParam(value = "date", required = false) Date date,
+            @RequestParam(value = "userId", required = false) String id
+    ) {
+        return ResponseEntity.ok(orderService.displayAllOrder(date, id));
+    }
+
+    @GetMapping("/profits")
+    public ResponseEntity<Map<String, Double>> profits(
+            @RequestParam(value = "dateFrom") Date dateFrom,
+            @RequestParam(value = "dateTo") Date dateTo
     ){
-        if (date!=null)
-            return ResponseEntity.ok(orderService.displayAllOrder(date));
-        else
-            return ResponseEntity.ok(orderService.displayAllOrder());
+        return ResponseEntity.ok(service.getProfits(dateFrom, dateTo));
     }
 
 }

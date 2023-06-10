@@ -3,6 +3,9 @@ package com.KiyoInteriors.ECommerce.service;
 import com.KiyoInteriors.ECommerce.DTO.Request.CategoryRequest;
 import com.KiyoInteriors.ECommerce.DTO.Request.DiscountRequest;
 import com.KiyoInteriors.ECommerce.DTO.Request.ProductRequest;
+import com.KiyoInteriors.ECommerce.DTO.Response.AdminProfitResponse;
+import com.KiyoInteriors.ECommerce.DTO.Response.AdminWishListResponse;
+import com.KiyoInteriors.ECommerce.DTO.Response.ProductPreviewResponse;
 import com.KiyoInteriors.ECommerce.entity.*;
 import com.KiyoInteriors.ECommerce.exceptions.ItemNotFoundException;
 import com.KiyoInteriors.ECommerce.exceptions.ConstraintException;
@@ -41,6 +44,7 @@ public class AdminService {
     private final ImageService imageService;
     private final UserRepository userRepository;
     private final MongoOperations mongoOperations;
+    private final WishlistRepository wishlistRepository;
 
     public void addCategory(CategoryRequest request) {
         Optional<Category> tempCategory = categoryRepository.findByCategory(request.getCategory());
@@ -164,7 +168,8 @@ public class AdminService {
         }
     }
 
-    public Map<String, Double> getProfits(Date dateFrom, Date dateTo) {
+    public AdminProfitResponse getProfits(Date dateFrom, Date dateTo) {
+
         Query query = new Query();
         query.addCriteria(Criteria.where("orderDate").gte(dateFrom).lte(new Date(dateTo.getTime() + 1000*60*60*24)));
         List<Order> orders = mongoOperations.find(query, Order.class);
@@ -181,6 +186,23 @@ public class AdminService {
              profits.put(dateFormat.format(order.getOrderDate()),
                      profits.getOrDefault(dateFormat.format(order.getOrderDate()), 0.0) +profit);
         }
-        return profits;
+        return AdminProfitResponse.builder().profit(profits).build();
+    }
+
+    public AdminWishListResponse viewWishlist() {
+        List<Wishlist> wishlists = wishlistRepository.findAll();
+        Map<ProductPreviewResponse , Integer> products = new HashMap<>();
+        for (Wishlist wishlist: wishlists){
+            for (String item: wishlist.getWishlistItems()){
+                Product product = productRepository.findById(item)
+                        .orElseThrow(()->new ItemNotFoundException("Product Not Found"));
+                ProductPreviewResponse tempProduct = ProductPreviewResponse.builder()
+                        .productId(product.getId())
+                        .category(product.getCategory().getCategory())
+                        .image(product.getProductPics().get(0)).build();
+                products.put(tempProduct, products.getOrDefault(tempProduct, 0)+1);
+            }
+        }
+        return AdminWishListResponse.builder().products(products).build();
     }
 }

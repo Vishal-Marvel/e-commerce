@@ -1,5 +1,6 @@
 package com.KiyoInteriors.ECommerce.controller.admin;
 
+import com.KiyoInteriors.ECommerce.DTO.Response.AdminProfitResponse;
 import com.KiyoInteriors.ECommerce.DTO.Response.OrderResponse;
 import com.KiyoInteriors.ECommerce.DTO.Response.OrderResponses;
 import com.KiyoInteriors.ECommerce.entity.Order;
@@ -60,7 +61,7 @@ public class OrderController {
     }
 
     @GetMapping("/profits")
-    public ResponseEntity<Map<String, Double>> profits(
+    public ResponseEntity<AdminProfitResponse> profits(
             @RequestParam(value = "dateFrom") Date dateFrom,
             @RequestParam(value = "dateTo") Date dateTo
     ){

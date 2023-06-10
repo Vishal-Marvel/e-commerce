@@ -2,7 +2,9 @@ package com.KiyoInteriors.ECommerce.controller.admin;
 
 import com.KiyoInteriors.ECommerce.DTO.Request.DiscountRequest;
 import com.KiyoInteriors.ECommerce.DTO.Request.ProductRequest;
+import com.KiyoInteriors.ECommerce.DTO.Response.AdminWishListResponse;
 import com.KiyoInteriors.ECommerce.DTO.Response.MiscResponse;
+import com.KiyoInteriors.ECommerce.DTO.Response.ProductPreviewResponse;
 import com.KiyoInteriors.ECommerce.entity.Product;
 import com.KiyoInteriors.ECommerce.exceptions.ItemNotFoundException;
 import com.KiyoInteriors.ECommerce.repository.ProductRepository;
@@ -14,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -55,6 +58,11 @@ public class ProductController {
     public ResponseEntity<MiscResponse> createDiscounts(@RequestBody DiscountRequest discountRequest){
         service.createDiscounts(discountRequest);
         return ResponseEntity.ok(MiscResponse.builder().response("Discounts Created").build());
+    }
+
+    @GetMapping("/user-wishlist")
+    public ResponseEntity<AdminWishListResponse> viewWishlist(){
+        return ResponseEntity.ok(service.viewWishlist());
     }
 
 }

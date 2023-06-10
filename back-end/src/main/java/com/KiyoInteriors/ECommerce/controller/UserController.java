@@ -3,7 +3,6 @@ package com.KiyoInteriors.ECommerce.controller;
 import com.KiyoInteriors.ECommerce.DTO.Request.*;
 import com.KiyoInteriors.ECommerce.DTO.Response.*;
 import com.KiyoInteriors.ECommerce.entity.Order;
-import com.KiyoInteriors.ECommerce.entity.UserRole;
 import com.KiyoInteriors.ECommerce.exceptions.ItemNotFoundException;
 import com.KiyoInteriors.ECommerce.exceptions.UserNotFoundException;
 import com.KiyoInteriors.ECommerce.repository.CartRepository;
@@ -26,7 +25,6 @@ import com.KiyoInteriors.ECommerce.service.WishlistService;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 
 /**
@@ -162,7 +160,7 @@ public class UserController
         return ResponseEntity.ok(MiscResponse.builder().response(productReviewService.giveReviewRating(user, review)).build());
     }
     @GetMapping("/order/{id}")
-    public ResponseEntity<OrderResponse> orderDetails(@PathVariable String id){
+    public ResponseEntity<OrderResponse> orderDetails(@PathVariable String id) {
         String name = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findUserByUsername(name)
                 .orElseThrow(() -> new UserNotFoundException("User Not Found"));
@@ -170,9 +168,10 @@ public class UserController
                 .orElseThrow(() -> new ItemNotFoundException("Order Not Found"));
         if (user.getId().equals(order.getUserId()))
             return ResponseEntity.ok(orderService.orderDetails(id));
-        else{
+        else {
             throw new AccessDeniedException("You Dont Have Access");
         }
+    }
 
         @PostMapping("/wishlist")
         public ResponseEntity<MiscResponse> addToWishlist(@RequestBody WishlistRequest wishlistRequest) {
@@ -184,7 +183,7 @@ public class UserController
         }
 
         @GetMapping("/wishlist")
-        public ResponseEntity<List<WishlistResponse>> showAllOrders() {
+        public ResponseEntity<List<ProductPreviewResponse>> showAllOrders() {
                 String name = SecurityContextHolder.getContext().getAuthentication().getName();
                 User user = userRepository.findUserByUsername(name)
                                 .orElseThrow(() -> new UserNotFoundException("User not Found"));

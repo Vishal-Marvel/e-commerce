@@ -6,8 +6,9 @@ import lombok.Data;
 
 @Data
 @Builder
-public class WishlistResponse {
+public class ProductPreviewResponse {
     private String productId;
     private String productName;
+    private String category;
     private Image image;
 }

@@ -1,5 +1,7 @@
 package com.KiyoInteriors.ECommerce.DTO.Response;
 
+import com.KiyoInteriors.ECommerce.DTO.Request.AddCartRequest;
+import com.KiyoInteriors.ECommerce.entity.Address;
 import com.KiyoInteriors.ECommerce.entity.Image;
 import lombok.Builder;
 import lombok.Data;
@@ -25,7 +27,7 @@ public class UserResponse {
     private String username;
     private String name;
     private String mobile;
-    private List<String> addresses;
+    private List<Address> addresses;
     private Image photo;
     private String email;
 

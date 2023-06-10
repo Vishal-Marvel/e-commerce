@@ -2,21 +2,30 @@ package com.KiyoInteriors.ECommerce.controller;
 
 import com.KiyoInteriors.ECommerce.DTO.Request.*;
 import com.KiyoInteriors.ECommerce.DTO.Response.AuthenticationResponse;
+import com.KiyoInteriors.ECommerce.DTO.Response.CityDetails;
 import com.KiyoInteriors.ECommerce.DTO.Response.MiscResponse;
 import com.KiyoInteriors.ECommerce.entity.User;
 import com.KiyoInteriors.ECommerce.entity.UserRole;
+import com.KiyoInteriors.ECommerce.exceptions.APIException;
 import com.KiyoInteriors.ECommerce.exceptions.UserNotFoundException;
 import com.KiyoInteriors.ECommerce.repository.UserRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 import jakarta.validation.Valid;
 import com.KiyoInteriors.ECommerce.service.AuthenticationService;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
+import java.util.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -35,6 +44,40 @@ public class AuthenticationController
     public ResponseEntity<MiscResponse> register(@Valid @ModelAttribute UserRequest userDTO) throws IOException, MessagingException {
         authService.register(userDTO);
         return ResponseEntity.ok(MiscResponse.builder().response("User Registered").build());
+
+    }
+
+    @GetMapping("/city-details/{pinCode}")
+    public ResponseEntity<CityDetails> getCityDetails(@PathVariable String pinCode) throws Exception {
+        String url = "https://api.postalpincode.in/pincode/" + pinCode;
+
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+
+        if (response.getStatusCode().is2xxSuccessful()) {
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode rootNode = objectMapper.readTree(response.getBody());
+            JsonNode postOfficeNode = rootNode.get(0).get("PostOffice");
+            List<String> cities = new ArrayList<>();
+            String state = null, country = null, district = null;
+
+            for (JsonNode node : postOfficeNode) {
+                state = node.get("State").asText();
+                country = node.get("Country").asText();
+                district = node.get("District").asText();
+                String name = node.get("Name").asText();
+                cities.add(name);
+            }
+            return ResponseEntity.ok(CityDetails.builder()
+                    .city(cities)
+                    .state(state)
+                    .country(country)
+                    .district(district)
+                    .build());
+
+        } else {
+            throw new APIException("Request Failed", (HttpStatus) response.getStatusCode());
+        }
 
     }
 

@@ -189,20 +189,4 @@ public class AdminService {
         return AdminProfitResponse.builder().profit(profits).build();
     }
 
-    public AdminWishListResponse viewWishlist() {
-        List<Wishlist> wishlists = wishlistRepository.findAll();
-        Map<ProductPreviewResponse , Integer> products = new HashMap<>();
-        for (Wishlist wishlist: wishlists){
-            for (String item: wishlist.getWishlistItems()){
-                Product product = productRepository.findById(item)
-                        .orElseThrow(()->new ItemNotFoundException("Product Not Found"));
-                ProductPreviewResponse tempProduct = ProductPreviewResponse.builder()
-                        .productId(product.getId())
-                        .category(product.getCategory().getCategory())
-                        .image(product.getProductPics().get(0)).build();
-                products.put(tempProduct, products.getOrDefault(tempProduct, 0)+1);
-            }
-        }
-        return AdminWishListResponse.builder().products(products).build();
-    }
 }

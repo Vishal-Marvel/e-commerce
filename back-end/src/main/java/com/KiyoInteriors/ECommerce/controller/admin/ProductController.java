@@ -9,6 +9,7 @@ import com.KiyoInteriors.ECommerce.entity.Product;
 import com.KiyoInteriors.ECommerce.exceptions.ItemNotFoundException;
 import com.KiyoInteriors.ECommerce.repository.ProductRepository;
 import com.KiyoInteriors.ECommerce.service.AdminService;
+import com.KiyoInteriors.ECommerce.service.WishlistService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,7 @@ import java.util.List;
 public class ProductController {
     private final AdminService service;
     private final ProductRepository productRepository;
+    private final WishlistService wishlistService;
 
     @PostMapping
     public ResponseEntity<MiscResponse> addProduct(@Valid @ModelAttribute ProductRequest productRequest)
@@ -62,7 +64,7 @@ public class ProductController {
 
     @GetMapping("/user-wishlist")
     public ResponseEntity<AdminWishListResponse> viewWishlist(){
-        return ResponseEntity.ok(service.viewWishlist());
+        return ResponseEntity.ok(wishlistService.viewWishlist());
     }
 
 }

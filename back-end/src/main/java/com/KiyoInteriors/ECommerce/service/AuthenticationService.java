@@ -2,9 +2,11 @@ package com.KiyoInteriors.ECommerce.service;
 
 import com.KiyoInteriors.ECommerce.DTO.Request.*;
 import com.KiyoInteriors.ECommerce.entity.Cart;
+import com.KiyoInteriors.ECommerce.entity.Wishlist;
 import com.KiyoInteriors.ECommerce.exceptions.ConstraintException;
 import com.KiyoInteriors.ECommerce.exceptions.UserNotFoundException;
 import com.KiyoInteriors.ECommerce.repository.CartRepository;
+import com.KiyoInteriors.ECommerce.repository.WishlistRepository;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
@@ -46,6 +48,7 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final CartRepository cartRepository;
     private final ImageService imageService;
+    private final WishlistRepository wishlistRepository;
     private final EmailService emailService;
 
     public void register(final UserRequest userDTO) throws IOException, MessagingException {
@@ -68,6 +71,8 @@ public class AuthenticationService {
         userRepository.save(user);
         Cart cart = new Cart(user.getId());
         cartRepository.save(cart);
+        Wishlist wishlist = new Wishlist(user.getId());
+        wishlistRepository.save(wishlist);
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest loginDTO) {

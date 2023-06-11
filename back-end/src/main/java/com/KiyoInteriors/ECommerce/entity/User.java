@@ -44,6 +44,7 @@ public class User {
     private Image photo;
     @Indexed(unique = true)
     private String email;
+    private String tempEmail;
     private UserRole role;
     private Date lastLoggedIn;
     private String OTP;

@@ -1,13 +1,17 @@
 package com.KiyoInteriors.ECommerce.service;
 
 import java.io.IOException;
+import java.util.Date;
+import java.util.UUID;
 
+import com.KiyoInteriors.ECommerce.DTO.Request.ChangeMailRequest;
+import com.KiyoInteriors.ECommerce.DTO.Request.SetProfileRequest;
 import com.KiyoInteriors.ECommerce.DTO.Response.UserResponse;
-import com.KiyoInteriors.ECommerce.entity.Image;
+import jakarta.mail.MessagingException;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import com.KiyoInteriors.ECommerce.entity.User;
-import com.KiyoInteriors.ECommerce.DTO.Request.UserRequest;
 import com.KiyoInteriors.ECommerce.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
@@ -23,11 +27,11 @@ public class UserService
 {
     private final UserRepository userRepository;
     private final ImageService imageService;
+    private final EmailService emailService;
 
-    public void updateUser(final UserRequest userDTO, final String id) throws IOException {
+    public void updateUser(final @Valid SetProfileRequest userDTO, final String id) throws IOException {
         User user = this.userRepository.findById(id)
                 .orElseThrow(() -> new UsernameNotFoundException("User Not Found"));
-        user.setEmail(userDTO.getEmail());
         user.setName(userDTO.getName());
         user.setMobile(userDTO.getMobile());
         user.setAddresses(userDTO.getAddresses());
@@ -45,5 +49,14 @@ public class UserService
                 .username(user.getUsername())
                 .name(user.getName())
                 .build();
+    }
+
+    public void changeMail(User user, ChangeMailRequest changeMailRequest) throws MessagingException {
+        String otp = UUID.randomUUID().toString();
+        user.setOTP(otp);
+        user.setOTPLimit(new Date(new Date().getTime()+1000*60*60));
+        user.setTempEmail(changeMailRequest.getNewMail());
+        emailService.sendVerificationEmail(changeMailRequest.getNewMail(), otp,"New Mail Verification","email-verify" );
+        userRepository.save(user);
     }
 }

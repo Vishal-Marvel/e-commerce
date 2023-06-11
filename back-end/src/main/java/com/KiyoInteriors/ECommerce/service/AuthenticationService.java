@@ -51,7 +51,7 @@ public class AuthenticationService {
     private final WishlistRepository wishlistRepository;
     private final EmailService emailService;
 
-    public void register(final UserRequest userDTO) throws IOException, MessagingException {
+    public void register(final RegisterRequest userDTO) throws MessagingException {
         Optional<User> optionalUser = userRepository.findUserByUsernameOrEmail(userDTO.getUsername(),
                 userDTO.getEmail());
         if (optionalUser.isPresent()) {
@@ -61,10 +61,6 @@ public class AuthenticationService {
         user.setUsername(userDTO.getUsername());
         user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         user.setEmail(userDTO.getEmail());
-        user.setName(userDTO.getName());
-        user.setMobile(userDTO.getMobile());
-        user.setAddresses(userDTO.getAddresses());
-        user.setPhoto(imageService.compressImage(userDTO.getPhoto()));
         user.setRole(UserRole.ROLE_USER);
         user.setVerified(false);
         sendMail(user, "verify", "Registration");
@@ -151,5 +147,19 @@ public class AuthenticationService {
         User user = userRepository.findUserByUsernameOrEmail(resetPasswordRequest.getUsernameOrEmail() , resetPasswordRequest.getUsernameOrEmail())
                 .orElseThrow(()->new UserNotFoundException("User Not Found"));
         sendMail(user, "verify", "Verification");
+    }
+
+    public void verifyUserAndChangeMail(String code) {
+        User user = userRepository.findUserByOTP(code)
+                .orElseThrow(()-> new UserNotFoundException("Invalid Code"));
+        if(new Date().after(user.getOTPLimit())){
+            throw new AccessDeniedException("Code Expired");
+        }
+        user.setOTP(null);
+        user.setOTPLimit(null);
+        user.setEmail(user.getTempEmail());
+        user.setTempEmail(null);
+        userRepository.save(user);
+
     }
 }

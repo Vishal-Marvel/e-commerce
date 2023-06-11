@@ -39,7 +39,7 @@ public class AuthenticationController
     private final AuthenticationService authService;
 
     @PostMapping( "/register" )
-    public ResponseEntity<MiscResponse> register(@Valid @ModelAttribute RegisterRequest registerRequest) throws IOException, MessagingException {
+    public ResponseEntity<MiscResponse> register(@Valid @RequestBody RegisterRequest registerRequest) throws IOException, MessagingException {
         authService.register(registerRequest);
         return ResponseEntity.ok(MiscResponse.builder().response("User Registered, Verification Mail Sent").build());
     }

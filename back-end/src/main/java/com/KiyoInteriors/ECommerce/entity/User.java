@@ -15,7 +15,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(collection = "user_table")
+@Document(collection = "users")
 /**
  * 
  * This class represents a User entity in the system.

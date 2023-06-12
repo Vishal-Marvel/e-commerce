@@ -1,15 +1,13 @@
 package com.KiyoInteriors.ECommerce.controller;
 
 import com.KiyoInteriors.ECommerce.DTO.Response.CategoryResponse;
+import com.KiyoInteriors.ECommerce.DTO.Response.ImageResponse;
 import com.KiyoInteriors.ECommerce.DTO.Response.OrderResponse;
 import com.KiyoInteriors.ECommerce.DTO.Response.ProductResponse;
 import com.KiyoInteriors.ECommerce.entity.*;
 import com.KiyoInteriors.ECommerce.exceptions.ItemNotFoundException;
 import com.KiyoInteriors.ECommerce.exceptions.UserNotFoundException;
-import com.KiyoInteriors.ECommerce.repository.CategoryRepository;
-import com.KiyoInteriors.ECommerce.repository.OrderRepository;
-import com.KiyoInteriors.ECommerce.repository.ProductRepository;
-import com.KiyoInteriors.ECommerce.repository.UserRepository;
+import com.KiyoInteriors.ECommerce.repository.*;
 import com.KiyoInteriors.ECommerce.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageImpl;
@@ -37,6 +35,7 @@ public class PublicController {
     private final CategoryRepository categoryRepository;
     private final ProductRepository productRepository;
     private final MongoOperations mongoOperations;
+    private final RawImageRepository rawImageRepository;
 
     @GetMapping("/category")
     public ResponseEntity<List<CategoryResponse>> categories(){
@@ -72,6 +71,15 @@ public class PublicController {
             }
         }
         return count;
+    }
+
+    @GetMapping("/image/{id}")
+    public ResponseEntity<ImageResponse> getImage(@PathVariable String id){
+        return ResponseEntity.ok(ImageResponse.builder()
+                .image(rawImageRepository.findById(id)
+                        .orElseThrow(()->new ItemNotFoundException("Image Not Found"))
+                        .getData())
+                .build());
     }
 
     @GetMapping("/products/{offSet}/{size}")

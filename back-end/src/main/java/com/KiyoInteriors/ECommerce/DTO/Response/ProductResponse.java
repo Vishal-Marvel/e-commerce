@@ -1,6 +1,5 @@
 package com.KiyoInteriors.ECommerce.DTO.Response;
 
-import com.KiyoInteriors.ECommerce.entity.Image;
 import com.KiyoInteriors.ECommerce.entity.Product;
 import com.KiyoInteriors.ECommerce.entity.ReviewRating;
 import lombok.Data;
@@ -21,7 +20,7 @@ public class ProductResponse {
     private Double productPrice;
     private Double MRP;
     private Integer discountPercentage;
-    private List<Image> productPics;
+    private List<String> productPics;
     private List<String> categories;
     private String model;
     private List<String> sizes;

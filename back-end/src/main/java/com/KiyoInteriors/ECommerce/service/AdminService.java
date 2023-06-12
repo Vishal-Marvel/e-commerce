@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -45,6 +46,7 @@ public class AdminService {
     private final UserRepository userRepository;
     private final MongoOperations mongoOperations;
     private final WishlistRepository wishlistRepository;
+    private final RawImageRepository rawImageRepository;
 
     public void addCategory(CategoryRequest request) {
         Optional<Category> tempCategory = categoryRepository.findByCategory(request.getCategory());
@@ -81,14 +83,16 @@ public class AdminService {
         newProduct.setSizes(productRequest.getSizes());
         newProduct.setModel(productRequest.getModel());
         newProduct.setQuantity(productRequest.getQuantity());
-        if (productRequest.getProductPics() != null) {
-            List<Image> images = new ArrayList<>();
-            for (MultipartFile file : productRequest.getProductPics()) {
-
-                images.add(imageService.compressImage(file));
-            }
-            newProduct.setProductPics(images);
-        }
+        newProduct.setProductPics(productRequest.getProductPics().stream()
+                .map(img->{
+                    String id = UUID.randomUUID().toString();
+                    try {
+                        imageService.saveRawImage(id, img);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                    return id;
+                }).toList());
         productRepository.save(newProduct);
     }
 
@@ -112,14 +116,16 @@ public class AdminService {
         product.setSizes(productRequest.getSizes());
         product.setModel(productRequest.getModel());
         product.setQuantity(productRequest.getQuantity());
-        if (productRequest.getProductPics() != null) {
-            List<Image> images = new ArrayList<>();
-            for (MultipartFile file : productRequest.getProductPics()) {
-
-                images.add(imageService.compressImage(file));
-            }
-            product.setProductPics(images);
-        }
+        product.setProductPics(productRequest.getProductPics().stream()
+                .map(img->{
+                    String dataId = UUID.randomUUID().toString();
+                    try {
+                        imageService.saveRawImage(dataId, img);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                    return dataId;
+                }).toList());
         productRepository.save(product);
     }
 
@@ -193,5 +199,7 @@ public class AdminService {
         }
         return AdminProfitResponse.builder().profit(profits).build();
     }
+
+
 
 }

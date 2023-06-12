@@ -1,6 +1,5 @@
 package com.KiyoInteriors.ECommerce.DTO.Response;
 
-import com.KiyoInteriors.ECommerce.entity.Image;
 import lombok.Builder;
 import lombok.Data;
 /**
@@ -22,7 +21,7 @@ public class CartProductsResponse {
     private String itemId;
     private String name;
     private Double price;
-    private Image image;
+    private String image;
     private String size;
     private String color;
     private String model;

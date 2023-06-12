@@ -26,8 +26,8 @@ public class ImageService {
             throw new IOException("png File Type Not Supported");
         }
         Thumbnails.Builder<? extends InputStream> builder = Thumbnails.of(file.getInputStream())
-                .size(600, 600)
-                .outputQuality(0.8);
+                .size(650, 650)
+                .outputQuality(0.9);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         builder.toOutputStream(outputStream);
         return outputStream.toByteArray();

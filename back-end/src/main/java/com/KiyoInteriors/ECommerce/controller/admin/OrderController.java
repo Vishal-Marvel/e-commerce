@@ -18,9 +18,11 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import com.KiyoInteriors.ECommerce.DTO.Request.SmsRequest;
 import com.KiyoInteriors.ECommerce.DTO.Request.UpdateOrderRequest;
 import com.KiyoInteriors.ECommerce.DTO.Response.MiscResponse;
 import com.KiyoInteriors.ECommerce.service.OrderService;
+import com.KiyoInteriors.ECommerce.service.SmsSenderService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -34,11 +36,11 @@ import java.util.Map;
 @SecurityRequirement(name = "Bearer Authentication")
 @PreAuthorize("hasAuthority('ROLE_ADMIN')")
 
-
 public class OrderController {
     private final OrderService orderService;
     private final OrderRepository orderRepository;
     private final AdminService service;
+    private final SmsSenderService smsSenderService;
 
     @PutMapping("/update-status")
     public ResponseEntity<MiscResponse> updateOrderStatus(@RequestBody UpdateOrderRequest updateOrderRequest) {
@@ -46,8 +48,9 @@ public class OrderController {
         return ResponseEntity.ok(MiscResponse.builder().response("OrderStatusUpdated").build());
 
     }
+
     @GetMapping("/{id}")
-    public ResponseEntity<OrderResponse> orderDetails(@PathVariable String id){
+    public ResponseEntity<OrderResponse> orderDetails(@PathVariable String id) {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new ItemNotFoundException("Order Not Found"));
         return ResponseEntity.ok(orderService.orderDetails(id));
@@ -57,17 +60,21 @@ public class OrderController {
     @GetMapping
     public ResponseEntity<List<OrderResponses>> getAllOrders(
             @RequestParam(value = "date", required = false) Date date,
-            @RequestParam(value = "userId", required = false) String id
-    ) {
+            @RequestParam(value = "userId", required = false) String id) {
         return ResponseEntity.ok(orderService.displayAllOrder(date, id));
     }
 
     @GetMapping("/profits")
     public ResponseEntity<AdminProfitResponse> profits(
             @RequestParam(value = "dateFrom") Date dateFrom,
-            @RequestParam(value = "dateTo") Date dateTo
-    ){
+            @RequestParam(value = "dateTo") Date dateTo) {
         return ResponseEntity.ok(service.getProfits(dateFrom, dateTo));
+    }
+
+    @PostMapping("/sendsms")
+    public ResponseEntity<MiscResponse> messageController(@RequestBody SmsRequest smsRequest) {
+        smsSenderService.sendSms(smsRequest);
+        return ResponseEntity.ok(MiscResponse.builder().response("SmsSent").build());
     }
 
 }

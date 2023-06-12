@@ -13,24 +13,22 @@ import com.twilio.type.PhoneNumber;
 public class SmsService {
     private final TwilioConfiguration twilioConfiguration;
 
-    @Autowired
-
     public SmsService(TwilioConfiguration twilioConfiguration) {
         this.twilioConfiguration = twilioConfiguration;
     }
 
     public void sendSms(SmsRequest smsRequest) {
-        if(phoneNumberIsValid(smsRequest.getPhoneNumber())){
+        if (phoneNumberIsValid(smsRequest.getPhoneNumber())) {
             PhoneNumber to = new PhoneNumber(smsRequest.getPhoneNumber());
             PhoneNumber from = new PhoneNumber(twilioConfiguration.getTrialNumber());
             String message = smsRequest.getMessage();
-            Message.creator(to, from, message);
-        }
-        else{
+            Message.creator(to, from, message).create();
+        } else {
             throw new ItemNotFoundException("Given Phone number is invalid");
         }
-        boolean phoneNumberIsValid(String phoneNumber) {
-            return true;
-        }
+    }
+
+    private boolean phoneNumberIsValid(String phoneNumber) {
+        return true;
     }
 }

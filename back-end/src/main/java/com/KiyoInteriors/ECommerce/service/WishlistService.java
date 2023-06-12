@@ -45,7 +45,7 @@ public class WishlistService {
             responseList.add(ProductPreviewResponse.builder()
                             .productName(product.getProductName())
                             .image(product.getProductPics().get(0))
-                            .category(product.getCategory().getCategory())
+                            .category(product.getCategories())
                             .productId(wishlistItem)
                             .build());
         }
@@ -62,7 +62,7 @@ public class WishlistService {
                 ProductPreviewResponse tempProduct = ProductPreviewResponse.builder()
                         .productId(product.getId())
                         .productName(product.getProductName())
-                        .category(product.getCategory().getCategory())
+                        .category(product.getCategories())
                         .image(product.getProductPics().get(0)).build();
                 products.put(tempProduct, products.getOrDefault(tempProduct, 0)+1);
             }

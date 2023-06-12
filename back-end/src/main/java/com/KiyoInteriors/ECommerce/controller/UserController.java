@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
@@ -48,7 +49,9 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @SecurityRequirement(name = "Bearer Authentication")
-@RequestMapping({ "/user" })
+@RequestMapping("/user")
+@PreAuthorize("hasAuthority('ROLE_USER')")
+
 public class UserController
 {
     private final UserService userService;
@@ -113,7 +116,6 @@ public class UserController
                 cartService.displayCart(user)
         );
     }
-
     @PostMapping("/cart")
     public ResponseEntity<MiscResponse> addProductToCart(@RequestBody AddCartRequest cartRequest){
         String name = SecurityContextHolder.getContext().getAuthentication().getName();

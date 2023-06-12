@@ -12,19 +12,21 @@ import com.KiyoInteriors.ECommerce.repository.ProductRepository;
 import com.KiyoInteriors.ECommerce.repository.UserRepository;
 import com.KiyoInteriors.ECommerce.service.OrderService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
 @RestController
 @RequiredArgsConstructor
+//@RequestMapping("/api/v1")
 /**
  * This class provides methods for accessing and manipulating public data.
  * It uses the CategoryRepository and ProductRepository interfaces to perform CRUD operations on the database.
@@ -65,7 +67,7 @@ public class PublicController {
         return ResponseEntity.ok(new ProductResponse(product));
     }
 
-    @GetMapping("/products")
+    @GetMapping("/products/{offSet}")
     public ResponseEntity<List<ProductResponse>> searchProducts(
             @RequestParam(value = "category", required = false) List<String> categories,
             @RequestParam(value = "name", required = false) String name,
@@ -73,9 +75,14 @@ public class PublicController {
             @RequestParam(value = "priceTo", required = false) Double priceTo,
             @RequestParam(value = "availability", required = false) String availability,
             @RequestParam(value = "color", required = false) List<String> colors,
-            @RequestParam(value = "size", required = false) List<String> sizes) {
+            @RequestParam(value = "size", required = false) List<String> sizes,
+            @RequestParam(value = "priceSort", required = false) String priceSort,
+            @RequestParam(value = "ratingSort", required = false) String ratingSort,
+            @PathVariable Integer offSet) {
+        Pageable pageable = PageRequest.of(offSet, 4);
 
-        Query query = new Query();
+        Query query = new Query().with(pageable);
+//        query.addCriteria(Criteria.where("categories").in("Featured"));
 
         if (categories != null) {
             List<Category> categoryList = new ArrayList<>();
@@ -85,7 +92,7 @@ public class PublicController {
                 categoryList.add(cat);
             }
             System.out.println("categoryList = " + categoryList);
-            query.addCriteria(Criteria.where("category").in(categoryList));
+            query.addCriteria(Criteria.where("categories").in(categoryList));
         }
 
         if (name != null) {
@@ -109,9 +116,19 @@ public class PublicController {
         if (sizes!= null && !sizes.isEmpty()){
             query.addCriteria(Criteria.where("sizes").in(sizes));
         }
+        if (priceSort!=null){
+            if (priceSort.equals("ASC"))
+                query.with(Sort.by(Sort.Direction.ASC, "price"));
+            else
+                query.with(Sort.by(Sort.Direction.DESC, "price"));
+        }
+        if (ratingSort!= null){
+            query.with(Sort.by(Sort.Direction.DESC, "rating"));
+        }
 
         List<Product> products = mongoOperations.find(query, Product.class);
-        return ResponseEntity.ok(products
+
+        return ResponseEntity.ok(new PageImpl<>(products, pageable, products.size())
                 .stream()
                 .map(ProductResponse::new)
                 .toList());

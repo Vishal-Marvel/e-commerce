@@ -14,6 +14,7 @@ import com.KiyoInteriors.ECommerce.service.AdminService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,6 +32,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @RequestMapping("/admin/order")
 @SecurityRequirement(name = "Bearer Authentication")
+@PreAuthorize("hasAuthority('ROLE_ADMIN')")
 
 
 public class OrderController {

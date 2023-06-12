@@ -18,17 +18,11 @@ import java.util.List;
  * - email: a non-empty string that is the user's email address
  */
 @Data
-public class UserRequest {
+public class RegisterRequest {
     @NotBlank(message = "Username is necessary")
     private String username;
-    @NotBlank(message = "Name is necessary")
-    private String name;
     @NotBlank(message = "Password is necessary")
     private String password;
-    @NotBlank(message = "Mobile Number is necessary")
-    private String mobile;
-    private List<Address> addresses;
-    private MultipartFile photo;
     @NotBlank(message = "Email is necessary")
     private String email;
 }

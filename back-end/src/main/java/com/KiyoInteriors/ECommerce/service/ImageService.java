@@ -14,7 +14,7 @@ public class ImageService {
     public Image compressImage(MultipartFile file) throws IOException {
         if (file == null) {
             file = new FileToMultipartFileConverter()
-                    .convert(new File("back-end\\src\\main\\resources\\static\\nouserimage.jpg"));
+                    .convert(new File("src\\main\\resources\\static\\nouserimage.jpg"));
         }
         Thumbnails.Builder<? extends InputStream> builder = Thumbnails.of(file.getInputStream())
                 .size(500, 500)

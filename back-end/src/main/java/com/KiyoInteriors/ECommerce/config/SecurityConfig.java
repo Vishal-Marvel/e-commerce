@@ -1,9 +1,12 @@
 package com.KiyoInteriors.ECommerce.config;
 
 import com.KiyoInteriors.ECommerce.entity.UserRole;
+import com.KiyoInteriors.ECommerce.service.CustomUserDetailsService;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -18,6 +21,12 @@ import com.KiyoInteriors.ECommerce.security.JWTAuthFilter;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.web.session.SessionManagementFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
 
 
 /**
@@ -39,13 +48,14 @@ import org.springframework.context.annotation.Configuration;
 public class SecurityConfig {
     private final JWTAuthFilter authFilter;
     private final JWTAuthEntryPoint authEntryPoint;
+    private final CustomUserDetailsService customUserDetailsService;
 
     @Bean
     SecurityFilterChain securityFilterChain(final HttpSecurity httpSecurity) throws Exception {
         return httpSecurity.csrf().disable()
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/admin/**").hasAuthority(UserRole.ROLE_ADMIN.name())
-                        .requestMatchers("/user/**").hasAuthority(UserRole.ROLE_USER.name())
+//                        .requestMatchers("/admin/**").hasRole(UserRole.ROLE_ADMIN.name())
+//                        .requestMatchers("/user/**").hasRole(UserRole.ROLE_USER.name())
                         .anyRequest().permitAll())
                 .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(authEntryPoint))
@@ -64,5 +74,6 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(final AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
+
 
 }

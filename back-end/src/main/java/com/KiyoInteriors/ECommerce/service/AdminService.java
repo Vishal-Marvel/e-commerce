@@ -65,10 +65,12 @@ public class AdminService {
 
     public void addProduct(ProductRequest productRequest) throws IOException {
         Product newProduct = new Product();
-        newProduct.setCategory(categoryRepository
-                .findByCategory(productRequest
-                        .getCategory())
-                .orElseThrow(() -> new ItemNotFoundException("Category Not Found")));
+        for (String cat: productRequest.getCategory()){
+            if (!categoryRepository.existsByCategory(cat)){
+                throw new ItemNotFoundException("Category Not Found");
+            }
+            newProduct.getCategories().add(cat);
+        }
         newProduct.setProductName(productRequest.getProductName());
         newProduct.setCostPrice(productRequest.getCostPrice());
         newProduct.setProfitPercentage(productRequest.getProfitPercentage()/100.0);
@@ -93,10 +95,13 @@ public class AdminService {
     public void updateProduct(String id, ProductRequest productRequest) throws IOException {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ItemNotFoundException("Product Not Found"));
-        product.setCategory(categoryRepository
-                .findByCategory(productRequest
-                        .getCategory())
-                .orElseThrow(() -> new ItemNotFoundException("Category Not Found")));
+        for (String cat: productRequest.getCategory()){
+            if (!categoryRepository.existsByCategory(cat)){
+                throw new ItemNotFoundException("Category Not Found");
+            }
+            if (!product.getCategories().contains(cat))
+                product.getCategories().add(cat);
+        }
         product.setProductName(productRequest.getProductName());
         product.setCostPrice(productRequest.getCostPrice());
         product.setMRP(productRequest.getMRP());

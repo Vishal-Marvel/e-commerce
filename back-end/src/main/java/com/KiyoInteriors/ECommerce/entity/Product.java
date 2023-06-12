@@ -26,7 +26,7 @@ public class Product {
     private List<String> sizes;
     private List<String> colors;
     private String model;
-    private Category category;
+    private List<String> categories = new ArrayList<>();
     private List<Image> productPics;
     private Map<String, ReviewRating> reviewRating = new HashMap<>();
     private Double rating = 0.0;

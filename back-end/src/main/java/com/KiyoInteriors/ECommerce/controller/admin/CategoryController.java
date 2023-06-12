@@ -9,12 +9,14 @@ import com.KiyoInteriors.ECommerce.service.AdminService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/admin/category")
 @SecurityRequirement(name = "Bearer Authentication")
+@PreAuthorize("hasAuthority('ROLE_ADMIN')")
 
 /**
  * This class is responsible for managing categories of products.

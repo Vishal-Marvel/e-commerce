@@ -1,7 +1,9 @@
 package com.KiyoInteriors.ECommerce.repository;
 
-import com.KiyoInteriors.ECommerce.entity.Category;
 import com.KiyoInteriors.ECommerce.entity.Product;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;
@@ -15,4 +17,5 @@ This interface defines several custom query methods for retrieving products base
 */
 public interface ProductRepository extends MongoRepository<Product, String> {
     List<Product> findAllByCouponsContains(String couponCode);
+    Page<Product> findAll(Pageable pageable);
 }

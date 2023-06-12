@@ -15,7 +15,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(collection = "user_table")
+@Document(collection = "users")
 /**
  * 
  * This class represents a User entity in the system.
@@ -44,6 +44,7 @@ public class User {
     private Image photo;
     @Indexed(unique = true)
     private String email;
+    private String tempEmail;
     private UserRole role;
     private Date lastLoggedIn;
     private String OTP;

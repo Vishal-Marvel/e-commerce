@@ -37,7 +37,7 @@ public class ProductRequest {
     @NotBlank(message = "Discount Percentage is necessary")
     private Double discountPercentage;
     @NotBlank(message = "Category is necessary")
-    private String category;
+    private List<String> category;
     @NotBlank(message = "Quantity is necessary")
     private Integer quantity;
     private List<MultipartFile> productPics;

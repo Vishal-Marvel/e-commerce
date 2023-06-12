@@ -9,8 +9,6 @@ import com.KiyoInteriors.ECommerce.entity.UserRole;
 import com.KiyoInteriors.ECommerce.exceptions.APIException;
 import com.KiyoInteriors.ECommerce.exceptions.UserNotFoundException;
 import com.KiyoInteriors.ECommerce.repository.UserRepository;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -41,10 +39,9 @@ public class AuthenticationController
     private final AuthenticationService authService;
 
     @PostMapping( "/register" )
-    public ResponseEntity<MiscResponse> register(@Valid @ModelAttribute UserRequest userDTO) throws IOException, MessagingException {
-        authService.register(userDTO);
-        return ResponseEntity.ok(MiscResponse.builder().response("User Registered").build());
-
+    public ResponseEntity<MiscResponse> register(@Valid @RequestBody RegisterRequest registerRequest) throws IOException, MessagingException {
+        authService.register(registerRequest);
+        return ResponseEntity.ok(MiscResponse.builder().response("User Registered, Verification Mail Sent").build());
     }
 
     @GetMapping("/city-details/{pinCode}")
@@ -93,6 +90,15 @@ public class AuthenticationController
         authService.verifyUser(code);
         return ResponseEntity.ok(MiscResponse.builder()
                 .response("User Verified").build());
+    }
+
+    @PostMapping("/email-verify")
+    public ResponseEntity<MiscResponse> emailVerify(
+            @RequestParam("code") String code
+    )  {
+        authService.verifyUserAndChangeMail(code);
+        return ResponseEntity.ok(MiscResponse.builder()
+                .response("Mail Changed").build());
     }
 
     @PostMapping("/dynamic-verify")

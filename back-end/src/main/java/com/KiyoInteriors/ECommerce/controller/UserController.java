@@ -12,8 +12,10 @@ import com.KiyoInteriors.ECommerce.service.CartService;
 import com.KiyoInteriors.ECommerce.service.OrderService;
 import com.KiyoInteriors.ECommerce.service.ProductReviewService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
@@ -47,7 +49,9 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @SecurityRequirement(name = "Bearer Authentication")
-@RequestMapping({ "/user" })
+@RequestMapping("/user")
+@PreAuthorize("hasAuthority('ROLE_USER')")
+
 public class UserController
 {
     private final UserService userService;
@@ -57,7 +61,26 @@ public class UserController
     private final OrderRepository orderRepository;
     private final OrderService orderService;
     private final ProductReviewService productReviewService;
-    private final WishlistService wishlistSevice;
+    private final WishlistService wishlistService;
+
+    @PostMapping( "/set-profile" )
+    public ResponseEntity<MiscResponse> setProfile(@Valid @ModelAttribute SetProfileRequest setProfileRequest) throws IOException, MessagingException {
+        String name = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findUserByUsername(name)
+                .orElseThrow(()->new UserNotFoundException("User Not Found"));
+        userService.updateUser(setProfileRequest, user.getId());
+        return ResponseEntity.ok(MiscResponse.builder().response("Profile Set").build());
+    }
+
+    @PostMapping("/change-email")
+    public ResponseEntity<MiscResponse> changeMailId(@RequestBody ChangeMailRequest changeMailRequest) throws MessagingException {
+        String name = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findUserByUsername(name)
+                .orElseThrow(()->new UserNotFoundException("User Not Found"));
+        userService.changeMail(user, changeMailRequest);
+        return ResponseEntity.ok(MiscResponse.builder().response("Verification Mail Sent").build());
+
+    }
 
     @GetMapping
     public ResponseEntity<UserResponse> getUser() {
@@ -68,11 +91,11 @@ public class UserController
     }
 
     @PutMapping
-    public ResponseEntity<MiscResponse> updateUser(@Valid @ModelAttribute UserRequest userDTO) throws IOException {
+    public ResponseEntity<MiscResponse> updateUser(@Valid @ModelAttribute SetProfileRequest setProfileRequest) throws IOException {
         String name = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findUserByUsername(name)
                 .orElseThrow(()->new UserNotFoundException("User Not Found"));
-        userService.updateUser(userDTO, user.getId());
+        userService.updateUser(setProfileRequest, user.getId());
         return ResponseEntity.ok(MiscResponse.builder().response("User Updated").build());
     }
 
@@ -93,7 +116,6 @@ public class UserController
                 cartService.displayCart(user)
         );
     }
-
     @PostMapping("/cart")
     public ResponseEntity<MiscResponse> addProductToCart(@RequestBody AddCartRequest cartRequest){
         String name = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -179,7 +201,7 @@ public class UserController
                 User user = userRepository.findUserByUsername(name)
                                 .orElseThrow(() -> new UserNotFoundException("User not Found"));
                 return ResponseEntity.ok(MiscResponse.builder()
-                                .response(wishlistSevice.addItemToWishlist(user, wishlistRequest)).build());
+                                .response(wishlistService.addItemToWishlist(user, wishlistRequest)).build());
         }
 
         @GetMapping("/wishlist")
@@ -187,6 +209,6 @@ public class UserController
                 String name = SecurityContextHolder.getContext().getAuthentication().getName();
                 User user = userRepository.findUserByUsername(name)
                                 .orElseThrow(() -> new UserNotFoundException("User not Found"));
-                return ResponseEntity.ok(wishlistSevice.displayWishlist(user));
+                return ResponseEntity.ok(wishlistService.displayWishlist(user));
         }
 }

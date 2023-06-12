@@ -34,8 +34,6 @@ public class ProductRequest {
     private Integer profitPercentage;
     @NotBlank(message = "MRP is necessary")
     private Double MRP;
-    @NotBlank(message = "Discount Percentage is necessary")
-    private Double discountPercentage;
     @NotBlank(message = "Category is necessary")
     private List<String> category;
     @NotBlank(message = "Quantity is necessary")

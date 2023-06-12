@@ -23,6 +23,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 @RestController
 @RequiredArgsConstructor
@@ -35,9 +36,6 @@ import java.util.List;
 public class PublicController {
     private final CategoryRepository categoryRepository;
     private final ProductRepository productRepository;
-    private final OrderRepository orderRepository;
-    private final UserRepository userRepository;
-    private final OrderService orderService;
     private final MongoOperations mongoOperations;
 
     @GetMapping("/category")
@@ -66,8 +64,17 @@ public class PublicController {
         Product product = productRepository.findById(id).orElseThrow(()-> new ItemNotFoundException("Product Not Found"));
         return ResponseEntity.ok(new ProductResponse(product));
     }
+    private int countMatchingCategories(List<String> categories, List<String> targetCategories) {
+        int count = 0;
+        for (String category : categories) {
+            if (targetCategories.contains(category)) {
+                count++;
+            }
+        }
+        return count;
+    }
 
-    @GetMapping("/products/{offSet}")
+    @GetMapping("/products/{offSet}/{size}")
     public ResponseEntity<List<ProductResponse>> searchProducts(
             @RequestParam(value = "category", required = false) List<String> categories,
             @RequestParam(value = "name", required = false) String name,
@@ -78,21 +85,15 @@ public class PublicController {
             @RequestParam(value = "size", required = false) List<String> sizes,
             @RequestParam(value = "priceSort", required = false) String priceSort,
             @RequestParam(value = "ratingSort", required = false) String ratingSort,
-            @PathVariable Integer offSet) {
-        Pageable pageable = PageRequest.of(offSet, 4);
+            @PathVariable Integer offSet, @PathVariable Integer size) {
+        Pageable pageable = PageRequest.of(offSet, size);
 
         Query query = new Query().with(pageable);
 //        query.addCriteria(Criteria.where("categories").in("Featured"));
 
         if (categories != null) {
-            List<Category> categoryList = new ArrayList<>();
-            for (String category : categories) {
-                Category cat = categoryRepository.findByCategory(category)
-                        .orElseThrow(() -> new ItemNotFoundException("Category Not Found"));
-                categoryList.add(cat);
-            }
-            System.out.println("categoryList = " + categoryList);
-            query.addCriteria(Criteria.where("categories").in(categoryList));
+
+            query.addCriteria(Criteria.where("categories").in(categories));
         }
 
         if (name != null) {
@@ -127,6 +128,15 @@ public class PublicController {
         }
 
         List<Product> products = mongoOperations.find(query, Product.class);
+        List<String> targetCategories = new ArrayList<>();
+        targetCategories.add("Featured");
+        targetCategories.add("On Sale");
+        targetCategories.add("New Coming");
+        products.sort((p1, p2) -> {
+            int countP1 = countMatchingCategories(p1.getCategories(), targetCategories);
+            int countP2 = countMatchingCategories(p2.getCategories(), targetCategories);
+            return Integer.compare(countP2, countP1); // Sort in descending order
+        });
 
         return ResponseEntity.ok(new PageImpl<>(products, pageable, products.size())
                 .stream()

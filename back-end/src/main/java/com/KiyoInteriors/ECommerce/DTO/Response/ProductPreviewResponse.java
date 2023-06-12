@@ -11,6 +11,5 @@ import java.util.List;
 public class ProductPreviewResponse {
     private String productId;
     private String productName;
-    private List<String> category;
     private Image image;
 }

@@ -14,5 +14,6 @@ import lombok.Data;
 public class Image {
     private String fileName;
     private byte[] data;
+    private String filePath;
     private String contentType;
 }

@@ -21,8 +21,8 @@ public class ProductResponse {
     private Double productPrice;
     private Double MRP;
     private Integer discountPercentage;
-    private List<String> category;
     private List<Image> productPics;
+    private List<String> categories;
     private String model;
     private List<String> sizes;
     private List<String> colors;
@@ -37,10 +37,10 @@ public class ProductResponse {
         this.productPrice = product.getPrice();
         this.discountPercentage = (int)Math.round((product.getMRP()-product.getPrice())/product.getMRP()*100);
         this.MRP = product.getMRP();
-        this.category = product.getCategories();
         this.productPics = product.getProductPics();
         this.model = product.getModel();
         this.colors = product.getColors();
+        this.categories = product.getCategories();
         this.sizes = product.getSizes();
         this.reviewRating = product.getReviewRating().values().stream().toList();
         this.ratings = getRatings(product.getReviewRating().values().stream().toList());

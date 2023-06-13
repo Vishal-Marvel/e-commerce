@@ -2,7 +2,10 @@ package com.KiyoInteriors.ECommerce.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
-
+/**
+ * A class representing the configuration for Twilio API.
+ * This class holds the account SID, authentication token, and trial number required for Twilio integration.
+ */
 @Configuration
 @ConfigurationProperties("twilio")
 public class TwilioConfiguration {

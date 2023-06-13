@@ -1,4 +1,16 @@
 package com.KiyoInteriors.ECommerce.DTO.Request;
+/**
+* A class representing an SMS request.
+* This class encapsulates the information required to send an SMS message.
+* The phone number of the recipient.
+* The content of the SMS message.
+* Constructs a new SmsRequest object with the provided phone number and message.
+*
+* @param phoneNumber The phone number of the recipient.
+* @param message     The content of the SMS message.
+ */
+
+
 
 public class SmsRequest {
     private final String phoneNumber;

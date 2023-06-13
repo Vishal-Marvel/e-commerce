@@ -14,3 +14,8 @@ logging:
     org:
       springframework:
         security: debug
+
+twilio:
+  account_sid: AC68a9e6a8b21d5509a961b993530411d4
+  auth_token: 635426f0594378550823f1d0d375584b
+  trial_number: +13613663579

@@ -22,7 +22,7 @@ public class Product {
     private Double profitPercentage;
     private Double MRP;
     private List<String> coupons = new ArrayList<>();
-    private Double price;
+    private Integer price;
     private List<String> sizes;
     private List<String> colors;
     private String model;

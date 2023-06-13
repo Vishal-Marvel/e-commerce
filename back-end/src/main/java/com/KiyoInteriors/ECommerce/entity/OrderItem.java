@@ -24,6 +24,6 @@ public class OrderItem {
     private String size;
     private Integer quantity;
     private String color;
-    private Double price;
+    private Integer price;
 
 }

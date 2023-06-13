@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -74,7 +75,9 @@ public class OrderService {
                     if (product.getCoupons().contains(request.getCoupon())){
                         DiscountCoupon coupon = discountCouponRepository.findByCouponCode(request.getCoupon())
                                 .orElseThrow(() ->new ItemNotFoundException("Coupon Not Exits"));
-                        orderItem.setPrice(product.getPrice() - product.getPrice()*coupon.getDiscountPercentage());
+                        double SP = product.getPrice() - product.getPrice()*coupon.getDiscountPercentage();
+                        int price = (int) (Math.round(SP / 10.0) * 10.0);
+                        orderItem.setPrice(price-1);
                     }
                     else{
                         orderItem.setPrice(product.getPrice());
@@ -102,7 +105,8 @@ public class OrderService {
         removeCartItems(order);
     }
 
-    private void removeCartItems(Order order) {
+    @Async
+    protected void removeCartItems(Order order) {
         if (Objects.equals(order.getOrderStatus(), "PLACED")){
             Cart cart = cartRepository.findCartByUserId(order.getUserId())
                     .orElseThrow(() -> new ItemNotFoundException("Cart Not Found"));
@@ -113,8 +117,8 @@ public class OrderService {
 
         }
     }
-
-    private void updateProductQuantity(Order order) {
+    @Async
+    protected void updateProductQuantity(Order order) {
         if (Objects.equals(order.getOrderStatus(), "PLACED")) {
             for (OrderItem item : order.getOrderItems()) {
                 Product product = productRepository.findById(item.getProductId())

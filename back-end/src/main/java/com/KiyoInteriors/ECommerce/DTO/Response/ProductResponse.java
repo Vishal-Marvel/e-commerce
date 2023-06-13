@@ -17,7 +17,7 @@ public class ProductResponse {
     private String id;
     private String productName;
     private String productDescription;
-    private Double productPrice;
+    private Integer productPrice;
     private Double MRP;
     private Integer discountPercentage;
     private List<String> productPics;

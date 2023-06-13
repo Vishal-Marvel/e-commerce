@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -36,49 +37,18 @@ public class CartService {
                 .orElseThrow(() -> new ItemNotFoundException("Cart Not Found"));
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new ItemNotFoundException("Product Not Found"));
-        for (CartItem item : cart.getCartItem().values()) {
-            if (item.getProductId().equals(request.getProductId())) {
-                if (item.getColor() != null && item.getSize() != null) {
-                    if (item.getColor().equals(request.getColor()) && item.getSize().equals(request.getSize())) {
-                        item.setQuantity(request.getQuantity() + item.getQuantity());
-                        if (request.getQuantity() > product.getQuantity()) {
-                            throw new ItemNotFoundException("Quantity insufficient");
-                        }
-                        cartRepository.save(cart);
-                        return;
-                    }
-                } else if (item.getColor() != null) {
-                    if (item.getColor().equals(request.getColor())) {
-                        item.setQuantity(request.getQuantity() + item.getQuantity());
-                        if (request.getQuantity() > product.getQuantity()) {
-                            throw new ItemNotFoundException("Quantity insufficient");
-                        }
-                        cartRepository.save(cart);
-                        return;
-                    }
-                } else if (item.getSize() != null) {
-                    if (item.getSize().equals(request.getSize())) {
-                        item.setQuantity(request.getQuantity() + item.getQuantity());
-                        if (request.getQuantity() > product.getQuantity()) {
-                            throw new ItemNotFoundException("Quantity insufficient");
-                        }
-                        cartRepository.save(cart);
-                        return;
-                    }
-                } else {
-                    item.setQuantity(request.getQuantity() + item.getQuantity());
-                    if (request.getQuantity() > product.getQuantity()) {
-                        throw new ItemNotFoundException("Quantity insufficient");
-                    }
-                    cartRepository.save(cart);
-                    return;
-                }
 
-            }
-
-        }
         if (request.getQuantity() > product.getQuantity()) {
             throw new ItemNotFoundException("Quantity insufficient");
+        }
+        for (CartItem item : cart.getCartItem().values()){
+            if (item.getProductId().equals(request.getProductId())
+            && Objects.equals(item.getSize(),request.getSize())
+            && Objects.equals(item.getColor(),request.getColor())){
+                item.setQuantity(item.getQuantity()+1);
+                cartRepository.save(cart);
+                return;
+            }
         }
 
         CartItem cartItemParameter = CartItem.builder()
@@ -88,14 +58,8 @@ public class CartService {
                 .color(request.getColor())
                 .quantity(request.getQuantity())
                 .build();
-        // if (request.getQuantity() != null) {
-        // cartItemParameter.setQuantity(request.getQuantity());
-        // } else {
-        // cartItemParameter.setQuantity(1);
-        // }
         cart.getCartItem().put(cartItemParameter.getId(), cartItemParameter);
         cartRepository.save(cart);
-        productRepository.save(product);
     }
 
     public void updateProduct(User user, UpdateCartRequest request) {

@@ -20,7 +20,7 @@ import lombok.Data;
 public class CartProductsResponse {
     private String itemId;
     private String name;
-    private Double price;
+    private Integer price;
     private String image;
     private String size;
     private String color;

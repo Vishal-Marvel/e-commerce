@@ -32,25 +32,9 @@ public class ImageService {
         builder.toOutputStream(outputStream);
         return outputStream.toByteArray();
     }
-//    public Image saveImage(MultipartFile file) throws IOException {
-//        String uniqueFilename = UUID.randomUUID().toString() + "-" + file.getOriginalFilename();
-//        String imagePath = "src\\main\\resources\\static\\uploads/" + uniqueFilename;
-//
-//        // Save the image file to the uploads directory
-//        Files.copy(file.getInputStream(), Paths.get(imagePath), StandardCopyOption.REPLACE_EXISTING);
-//
-//        // Set the image path in the product object
-//        return Image.builder()
-//                .contentType(file.getContentType())
-//                .fileName(uniqueFilename)
-//                .filePath(imagePath).build();
-//        product.setImagePath(imagePath);
-//
-//        // Save the product in MongoDB
-//        return productRepository.save(product);
-//    }
+
     @Async
-    public void saveRawImage(String id, MultipartFile file) throws IOException {
+    protected void saveRawImage(String id, MultipartFile file) throws IOException {
         RawImage rawImage = new RawImage();
         rawImage.setId(id);
         rawImage.setData(compressImage(file));

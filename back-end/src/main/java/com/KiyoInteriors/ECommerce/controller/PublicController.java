@@ -21,8 +21,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 //@RequestMapping("/api/v1")
@@ -96,29 +96,23 @@ public class PublicController {
             @PathVariable Integer offSet, @PathVariable Integer size) {
         Pageable pageable = PageRequest.of(offSet, size);
 
-        Query query = new Query().with(pageable);
-//        query.addCriteria(Criteria.where("categories").in("Featured"));
+        Query query = new Query();
 
         if (categories != null) {
-
             query.addCriteria(Criteria.where("categories").in(categories));
         }
-
         if (name != null) {
             query.addCriteria(Criteria.where("productName").regex(name, "i"));
         }
-
         if (priceFrom != null && priceTo != null) {
             query.addCriteria(Criteria.where("price").gte(priceFrom).lte(priceTo));
         }
-
         if (availability != null){
             if (availability.equals("true"))
                 query.addCriteria(Criteria.where("quantity").gte(0));
             else
                 query.addCriteria(Criteria.where("quantity").is(0));
         }
-
         if (colors!= null && !colors.isEmpty()){
             query.addCriteria(Criteria.where("colors").in(colors));
         }
@@ -145,8 +139,12 @@ public class PublicController {
             int countP2 = countMatchingCategories(p2.getCategories(), targetCategories);
             return Integer.compare(countP2, countP1); // Sort in descending order
         });
+        List<Product> paginatedProducts = products.stream()
+                .skip(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .toList();
 
-        return ResponseEntity.ok(new PageImpl<>(products, pageable, products.size())
+        return ResponseEntity.ok(new PageImpl<>(paginatedProducts, pageable, products.size())
                 .stream()
                 .map(ProductResponse::new)
                 .toList());

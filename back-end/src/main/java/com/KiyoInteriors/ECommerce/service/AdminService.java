@@ -4,7 +4,7 @@ import com.KiyoInteriors.ECommerce.DTO.Request.CategoryRequest;
 import com.KiyoInteriors.ECommerce.DTO.Request.DiscountRequest;
 import com.KiyoInteriors.ECommerce.DTO.Request.ProductRequest;
 import com.KiyoInteriors.ECommerce.DTO.Response.AdminProfitResponse;
-import com.KiyoInteriors.ECommerce.DTO.Response.AdminWishListResponse;
+import com.KiyoInteriors.ECommerce.DTO.Response.DiscountResponse;
 import com.KiyoInteriors.ECommerce.DTO.Response.ProductPreviewResponse;
 import com.KiyoInteriors.ECommerce.entity.*;
 import com.KiyoInteriors.ECommerce.exceptions.ItemNotFoundException;
@@ -17,9 +17,9 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -76,7 +76,9 @@ public class AdminService {
         newProduct.setProductName(productRequest.getProductName());
         newProduct.setCostPrice(productRequest.getCostPrice());
         newProduct.setProfitPercentage(productRequest.getProfitPercentage()/100.0);
-        newProduct.setPrice(productRequest.getCostPrice() +  productRequest.getCostPrice()*(productRequest.getProfitPercentage()/100.0));
+        double SP = productRequest.getCostPrice() +  productRequest.getCostPrice()*(productRequest.getProfitPercentage()/100.0);
+        int price = (int) (Math.round(SP / 10.0) * 10.0);
+        newProduct.setPrice(price-1);
         newProduct.setMRP(productRequest.getMRP());
         newProduct.setProductDescription(productRequest.getProductDescription());
         newProduct.setColors(productRequest.getColors());
@@ -110,7 +112,9 @@ public class AdminService {
         product.setCostPrice(productRequest.getCostPrice());
         product.setMRP(productRequest.getMRP());
         product.setProfitPercentage(productRequest.getProfitPercentage()/100.0);
-        product.setPrice(productRequest.getCostPrice() +  productRequest.getCostPrice()*(productRequest.getProfitPercentage()/100.0));
+        double SP = productRequest.getCostPrice() +  productRequest.getCostPrice()*(productRequest.getProfitPercentage()/100.0);
+        int price = (int) (Math.round(SP / 10.0) * 10.0);
+        product.setPrice(price-1);
         product.setProductDescription(productRequest.getProductDescription());
         product.setColors(productRequest.getColors());
         product.setSizes(productRequest.getSizes());
@@ -129,21 +133,34 @@ public class AdminService {
         productRepository.save(product);
     }
 
+    public void updateAll(ProductRequest updateAllRequest) {
+        List<Product> products = productRepository.findAll();
+        for (Product product: products){
+            double SP = updateAllRequest.getCostPrice() +  updateAllRequest.getCostPrice()*(updateAllRequest.getProfitPercentage()/100.0);
+            int price = (int) (Math.round(SP / 10.0) * 10.0);
+            product.setPrice(price-1);
+            productRepository.save(product);
+        }
+    }
+
+    @Async
+    protected void saveDiscount(String id, String coupon){
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ItemNotFoundException("Product Not Found"));
+        product.getCoupons().add(coupon);
+        productRepository.save(product);
+    }
+
     public void createDiscounts(DiscountRequest discountRequest){
         DiscountCoupon discountCoupon = new DiscountCoupon();
         discountCoupon.setCouponCode(discountRequest.getCouponCode());
         discountCoupon.setDiscountPercentage(discountRequest.getDiscountPercentage()/100.0);
         discountCoupon.setValidity(discountRequest.getValidity());
         for(String id : discountRequest.getProducts()){
-            Product product = productRepository.findById(id)
-                    .orElseThrow(() -> new ItemNotFoundException("Product Not Found"));
-            product.getCoupons().add(discountRequest.getCouponCode());
-            productRepository.save(product);
-
+            saveDiscount(id, discountRequest.getCouponCode());
         }
         discountCouponRepository.save(discountCoupon);
     }
-
     @Scheduled(cron = "0 0 0 * * ?") // Runs at midnight every day
     public void removeCoupons(){
         for (DiscountCoupon coupon: discountCouponRepository.findAll()){
@@ -158,7 +175,6 @@ public class AdminService {
             }
         }
     }
-
     @Scheduled(cron = "0 0 0 * * ?")
     public void removeInActiveUsers(){
         for (User user: userRepository.findAllByVerified(false)){
@@ -168,7 +184,6 @@ public class AdminService {
             }
         }
     }
-
     @Scheduled(cron = "0 0 0 * * ?")
     public void deleteCarts(){
         for (Cart cart: cartRepository.findAll()){
@@ -201,5 +216,21 @@ public class AdminService {
     }
 
 
-
+    public List<DiscountResponse> viewDiscounts() {
+        return discountCouponRepository.findAll().stream()
+                .map(discountCoupon -> DiscountResponse.builder()
+                        .discountPercentage((int) (discountCoupon.getDiscountPercentage()*100))
+                        .couponCode(discountCoupon.getCouponCode())
+                        .validity(discountCoupon.getValidity())
+                        .products(productRepository.findAllByCouponsContains(discountCoupon.getCouponCode())
+                                .stream()
+                                .map(product -> ProductPreviewResponse.builder()
+                                    .image(product.getProductPics().get(0))
+                                    .productName(product.getProductName())
+                                    .productId(product.getId())
+                                    .build())
+                                .toList())
+                        .build())
+                .toList();
+    }
 }

@@ -3,6 +3,7 @@ package com.KiyoInteriors.ECommerce.controller.admin;
 import com.KiyoInteriors.ECommerce.DTO.Request.DiscountRequest;
 import com.KiyoInteriors.ECommerce.DTO.Request.ProductRequest;
 import com.KiyoInteriors.ECommerce.DTO.Response.AdminWishListResponse;
+import com.KiyoInteriors.ECommerce.DTO.Response.DiscountResponse;
 import com.KiyoInteriors.ECommerce.DTO.Response.MiscResponse;
 import com.KiyoInteriors.ECommerce.DTO.Response.ProductPreviewResponse;
 import com.KiyoInteriors.ECommerce.entity.Product;
@@ -63,10 +64,19 @@ public class ProductController {
         service.createDiscounts(discountRequest);
         return ResponseEntity.ok(MiscResponse.builder().response("Discounts Created").build());
     }
+    @GetMapping("/discounts")
+    public ResponseEntity<List<DiscountResponse>> discounts(){
+        return ResponseEntity.ok(service.viewDiscounts());
+    }
 
     @GetMapping("/user-wishlist")
     public ResponseEntity<AdminWishListResponse> viewWishlist(){
         return ResponseEntity.ok(wishlistService.viewWishlist());
+    }
+    @PostMapping("/update-all")
+    public String updateAll(@ModelAttribute ProductRequest productRequest){
+        service.updateAll(productRequest);
+        return "done";
     }
 
 }

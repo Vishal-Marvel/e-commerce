@@ -5,7 +5,11 @@ import lombok.AllArgsConstructor;
 
 import java.util.Date;
 import java.util.List;
-
+/**
+ * A class representing an Order Response.
+ * This class encapsulates the information related to an order, including its ID, amount, date, status,
+ * building address, shipping address, payment method, and the list of items in the order.
+ */
 @Data
 @AllArgsConstructor
 

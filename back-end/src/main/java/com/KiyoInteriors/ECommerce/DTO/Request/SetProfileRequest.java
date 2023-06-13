@@ -6,7 +6,10 @@ import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-
+/**
+ * A class representing a Set Profile request.
+ * This class encapsulates the information required to set a user's profile.
+ */
 @Data
 public class SetProfileRequest {
     @NotBlank(message = "Name is necessary")

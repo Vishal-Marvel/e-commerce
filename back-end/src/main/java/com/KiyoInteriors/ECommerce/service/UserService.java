@@ -7,13 +7,17 @@ import java.util.UUID;
 import com.KiyoInteriors.ECommerce.DTO.Request.ChangeMailRequest;
 import com.KiyoInteriors.ECommerce.DTO.Request.SetProfileRequest;
 import com.KiyoInteriors.ECommerce.DTO.Response.UserResponse;
+import com.KiyoInteriors.ECommerce.entity.RawImage;
+import com.KiyoInteriors.ECommerce.repository.RawImageRepository;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import com.KiyoInteriors.ECommerce.entity.User;
 import com.KiyoInteriors.ECommerce.repository.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
 
@@ -28,6 +32,7 @@ public class UserService
     private final UserRepository userRepository;
     private final ImageService imageService;
     private final EmailService emailService;
+    private final RawImageRepository rawImageRepository;
 
     public void updateUser(final @Valid SetProfileRequest userDTO, final String id) throws IOException {
         User user = this.userRepository.findById(id)
@@ -35,7 +40,9 @@ public class UserService
         user.setName(userDTO.getName());
         user.setMobile(userDTO.getMobile());
         user.setAddresses(userDTO.getAddresses());
-        user.setPhoto(imageService.compressImage(userDTO.getPhoto()));
+        String dataId = UUID.randomUUID().toString();
+        user.setPhoto(dataId);
+        imageService.saveRawImage(dataId, userDTO.getPhoto());
         userRepository.save(user);
     }
 

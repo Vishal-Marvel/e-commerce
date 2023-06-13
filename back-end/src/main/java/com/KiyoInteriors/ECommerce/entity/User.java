@@ -41,7 +41,7 @@ public class User {
     private String password;
     private String mobile;
     private List< Address> addresses;
-    private Image photo;
+    private String photo;
     @Indexed(unique = true)
     private String email;
     private String tempEmail;

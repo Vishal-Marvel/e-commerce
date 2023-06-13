@@ -7,7 +7,10 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import lombok.Data;
-
+/**
+ * A class representing a user's wishlist.
+ * This class holds information about the wishlist, including its ID, user ID, and the items in the wishlist.
+ */
 @Data
 @Document
 public class Wishlist {

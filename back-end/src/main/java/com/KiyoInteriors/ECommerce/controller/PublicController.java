@@ -2,13 +2,10 @@ package com.KiyoInteriors.ECommerce.controller;
 
 import com.KiyoInteriors.ECommerce.DTO.Response.CategoryResponse;
 import com.KiyoInteriors.ECommerce.DTO.Response.ImageResponse;
-import com.KiyoInteriors.ECommerce.DTO.Response.OrderResponse;
 import com.KiyoInteriors.ECommerce.DTO.Response.ProductResponse;
 import com.KiyoInteriors.ECommerce.entity.*;
 import com.KiyoInteriors.ECommerce.exceptions.ItemNotFoundException;
-import com.KiyoInteriors.ECommerce.exceptions.UserNotFoundException;
 import com.KiyoInteriors.ECommerce.repository.*;
-import com.KiyoInteriors.ECommerce.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;

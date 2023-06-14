@@ -51,7 +51,7 @@ public class AuthenticationService {
     private final WishlistRepository wishlistRepository;
     private final EmailService emailService;
 
-    public void register(final RegisterRequest userDTO) throws MessagingException {
+    public void register(RegisterRequest userDTO) throws MessagingException {
         Optional<User> optionalUser = userRepository.findUserByUsernameOrEmail(userDTO.getUsername(),
                 userDTO.getEmail());
         if (optionalUser.isPresent()) {
@@ -161,5 +161,19 @@ public class AuthenticationService {
         user.setTempEmail(null);
         userRepository.save(user);
 
+    }
+
+    public void oAuth2register(RegisterRequest request) {
+        User user = new User();
+        user.setUsername(request.getUsername());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setEmail(request.getEmail());
+        user.setRole(UserRole.ROLE_USER);
+        user.setVerified(true);
+        userRepository.save(user);
+        Cart cart = new Cart(user.getId());
+        cartRepository.save(cart);
+        Wishlist wishlist = new Wishlist(user.getId());
+        wishlistRepository.save(wishlist);
     }
 }

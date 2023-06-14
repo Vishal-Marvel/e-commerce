@@ -161,6 +161,7 @@ public class AdminService {
         }
         discountCouponRepository.save(discountCoupon);
     }
+    @Async
     @Scheduled(cron = "0 0 0 * * ?") // Runs at midnight every day
     public void removeCoupons(){
         for (DiscountCoupon coupon: discountCouponRepository.findAll()){
@@ -175,6 +176,7 @@ public class AdminService {
             }
         }
     }
+    @Async
     @Scheduled(cron = "0 0 0 * * ?")
     public void removeInActiveUsers(){
         for (User user: userRepository.findAllByVerified(false)){
@@ -184,6 +186,7 @@ public class AdminService {
             }
         }
     }
+    @Async
     @Scheduled(cron = "0 0 0 * * ?")
     public void deleteCarts(){
         for (Cart cart: cartRepository.findAll()){

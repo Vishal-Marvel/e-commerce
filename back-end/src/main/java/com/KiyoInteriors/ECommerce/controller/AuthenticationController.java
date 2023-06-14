@@ -4,6 +4,7 @@ import com.KiyoInteriors.ECommerce.DTO.Request.*;
 import com.KiyoInteriors.ECommerce.DTO.Response.AuthenticationResponse;
 import com.KiyoInteriors.ECommerce.DTO.Response.CityDetails;
 import com.KiyoInteriors.ECommerce.DTO.Response.MiscResponse;
+import com.KiyoInteriors.ECommerce.config.GoogleOAuth2Config;
 import com.KiyoInteriors.ECommerce.entity.User;
 import com.KiyoInteriors.ECommerce.entity.UserRole;
 import com.KiyoInteriors.ECommerce.exceptions.APIException;
@@ -16,6 +17,10 @@ import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 import jakarta.validation.Valid;
@@ -79,7 +84,7 @@ public class AuthenticationController
     }
 
     @PostMapping( "/authenticate" )
-    public ResponseEntity<AuthenticationResponse> register(@Valid @RequestBody AuthenticationRequest request) {
+    public ResponseEntity<AuthenticationResponse> authenticate(@Valid @RequestBody AuthenticationRequest request) {
         return ResponseEntity.ok(authService.authenticate(request));
     }
 
@@ -153,5 +158,18 @@ public class AuthenticationController
                 .response("Privileges Updated")
                 .build());
     }
+
+    @PostMapping("/oauth2/callback/google")
+    public ResponseEntity<?> handleGoogleCallback(@RequestBody RegisterRequest request) throws MessagingException {
+        if (!userRepository.existsByEmail(request.getEmail())) {
+            authService.oAuth2register(request);
+
+        }
+            AuthenticationRequest authenticationRequest = new AuthenticationRequest();
+            authenticationRequest.setPassword(request.getPassword());
+            authenticationRequest.setUsernameOrEmail(request.getEmail());
+            return ResponseEntity.ok(authService.authenticate(authenticationRequest));
+     }
+
 
 }

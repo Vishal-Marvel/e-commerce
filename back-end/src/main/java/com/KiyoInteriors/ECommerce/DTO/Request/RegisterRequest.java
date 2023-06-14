@@ -2,6 +2,7 @@ package com.KiyoInteriors.ECommerce.DTO.Request;
 
 import com.KiyoInteriors.ECommerce.entity.Address;
 import jakarta.validation.constraints.NotBlank;
+import lombok.Builder;
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
 

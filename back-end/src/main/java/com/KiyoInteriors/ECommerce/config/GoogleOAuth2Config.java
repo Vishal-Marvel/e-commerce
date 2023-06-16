@@ -8,6 +8,16 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.oidc.IdTokenClaimNames;
+/**
+ * This class represents a configuration for Google OAuth2.
+ * It contains the following fields:
+ * - clientId: the client ID of the Google OAuth2 application
+ * - clientSecret: the client secret of the Google OAuth2 application
+ *
+ * It also contains the following methods:
+ * - clientRegistrationRepository(): returns a new instance of ClientRegistrationRepository
+ * - googleClientRegistration(): returns a new instance of ClientRegistration for Google OAuth2
+ */
 
 @Configuration
 public class GoogleOAuth2Config {

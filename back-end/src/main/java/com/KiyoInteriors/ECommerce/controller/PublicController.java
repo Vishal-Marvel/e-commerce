@@ -40,17 +40,17 @@ public class PublicController {
                 categoryRepository.findAll()
                         .stream()
                         .map(cat->CategoryResponse.builder()
-                                .categoryName(cat.getCategory())
+                                .categoryName(cat.getCategoryName())
                                 .build())
                         .toList()
         );
     }
     @GetMapping("/category/{name}")
     public ResponseEntity<CategoryResponse> category(@PathVariable String name){
-        Category category = categoryRepository.findByCategory(name).orElseThrow(() -> new ItemNotFoundException("Category Not Found"));
+        Category category = categoryRepository.findByCategoryName(name).orElseThrow(() -> new ItemNotFoundException("Category Not Found"));
         return ResponseEntity.ok(
                 CategoryResponse.builder()
-                        .categoryName(category.getCategory())
+                        .categoryName(category.getCategoryName())
                         .build()
         );
     }

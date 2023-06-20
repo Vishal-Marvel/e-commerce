@@ -23,7 +23,6 @@ import java.util.List;
 public class UserResponse {
     private String id;
     private String username;
-    private String name;
     private String mobile;
     private List<Address> addresses;
     private String photo;

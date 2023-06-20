@@ -13,7 +13,7 @@ This interface defines a custom query method, "findByCategory", which allows fin
 */
 
 public interface CategoryRepository extends MongoRepository<Category, String> {
-    Optional<Category> findByCategory(String category);
-    boolean existsByCategory(String category);
+    Optional<Category> findByCategoryName(String category);
+    boolean existsByCategoryName(String category);
 
 }

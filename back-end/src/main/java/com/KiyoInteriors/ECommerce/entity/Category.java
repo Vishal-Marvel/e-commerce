@@ -15,6 +15,6 @@ import java.util.UUID;
 public class Category {
     @Id
     private String id = UUID.randomUUID().toString();
-    private String category;
+    private String categoryName;
 
 }

@@ -24,7 +24,7 @@ public class Bootstrap implements CommandLineRunner
         if (userRepository.findAll().size() == 0L) {
             User user = new User();
             user.setUsername("admin");
-            user.setName("admin");
+            user.setEmail("admin@kiyo.com");
             user.setPassword(passwordEncoder.encode("password"));
             user.setRole(UserRole.ROLE_ADMIN);
             user.setVerified(true);

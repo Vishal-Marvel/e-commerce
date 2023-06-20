@@ -7,5 +7,5 @@ import lombok.Data;
  */
 @Data
 public class ResetPasswordRequest {
-    private String usernameOrEmail;
+    private String email;
 }

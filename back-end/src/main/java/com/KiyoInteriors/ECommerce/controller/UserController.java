@@ -65,8 +65,8 @@ public class UserController
 
     @PostMapping( "/set-profile" )
     public ResponseEntity<MiscResponse> setProfile(@Valid @ModelAttribute SetProfileRequest setProfileRequest) throws IOException, MessagingException {
-        String name = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findUserByUsername(name)
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(()->new UserNotFoundException("User Not Found"));
         userService.updateUser(setProfileRequest, user.getId());
         return ResponseEntity.ok(MiscResponse.builder().response("Profile Set").build());
@@ -74,8 +74,8 @@ public class UserController
 
     @PostMapping("/change-email")
     public ResponseEntity<MiscResponse> changeMailId(@RequestBody ChangeMailRequest changeMailRequest) throws MessagingException {
-        String name = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findUserByUsername(name)
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(()->new UserNotFoundException("User Not Found"));
         userService.changeMail(user, changeMailRequest);
         return ResponseEntity.ok(MiscResponse.builder().response("Verification Mail Sent").build());
@@ -84,16 +84,16 @@ public class UserController
 
     @GetMapping
     public ResponseEntity<UserResponse> getUser() {
-        String name = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findUserByUsername(name)
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(()->new UserNotFoundException("User Not Found"));
         return ResponseEntity.ok(userService.convertUserToResponse(user));
     }
 
     @PutMapping
     public ResponseEntity<MiscResponse> updateUser(@Valid @ModelAttribute SetProfileRequest setProfileRequest) throws IOException {
-        String name = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findUserByUsername(name)
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(()->new UserNotFoundException("User Not Found"));
         userService.updateUser(setProfileRequest, user.getId());
         return ResponseEntity.ok(MiscResponse.builder().response("User Updated").build());
@@ -101,16 +101,16 @@ public class UserController
 
     @DeleteMapping
     public ResponseEntity<MiscResponse> deleteUser(){
-        String name  = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findUserByUsername(name)
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(()->new UserNotFoundException("User Not Found"));
         userRepository.delete(user);
         return ResponseEntity.ok(MiscResponse.builder().response("User Deleted").build());
     }
     @GetMapping("/cart")
     public ResponseEntity<List<CartProductsResponse>> cart(){
-        String name = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findUserByUsername(name)
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(()->new UserNotFoundException("User Not Found"));
         return ResponseEntity.ok(
                 cartService.displayCart(user)
@@ -118,9 +118,9 @@ public class UserController
     }
     @PostMapping("/cart")
     public ResponseEntity<MiscResponse> addProductToCart(@RequestBody AddCartRequest cartRequest){
-        String name = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findUserByUsername(name)
-                .orElseThrow(()->new UserNotFoundException("User not Found"));
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(()->new UserNotFoundException("User Not Found"));
         cartService.addItemToCart(user, cartRequest);
         return ResponseEntity.ok(
                 MiscResponse.builder()
@@ -131,9 +131,9 @@ public class UserController
 
     @PutMapping("/cart")
     public ResponseEntity<MiscResponse> updateItem(@RequestBody UpdateCartRequest cartRequest){
-        String name = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findUserByUsername(name)
-                .orElseThrow(()->new UserNotFoundException("User not Found"));
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(()->new UserNotFoundException("User Not Found"));
         cartService.updateProduct(user, cartRequest);
         return ResponseEntity.ok(
                 MiscResponse.builder()
@@ -144,9 +144,9 @@ public class UserController
 
     @DeleteMapping("/cart/{itemId}")
     public ResponseEntity<MiscResponse> deleteProductInCart(@PathVariable String itemId){
-        String name = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findUserByUsername(name)
-                .orElseThrow(()->new UserNotFoundException("User not Found"));
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(()->new UserNotFoundException("User Not Found"));
         cartService.deleteItemFromCart(user, itemId);
         return ResponseEntity.ok(
                 MiscResponse.builder()
@@ -157,9 +157,9 @@ public class UserController
 
     @PostMapping("/order")
     public ResponseEntity<MiscResponse> createOrder(@RequestBody OrderRequest request){
-        String name = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findUserByUsername(name)
-                .orElseThrow(()->new UserNotFoundException("User not Found"));
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(()->new UserNotFoundException("User Not Found"));
         orderService.createOrder(user, request);
         return ResponseEntity.ok(MiscResponse.builder().response("Order Created").build());
     }
@@ -168,24 +168,24 @@ public class UserController
     public ResponseEntity<List<OrderResponses>> orders(
             @RequestParam(value = "date", required = false) Date date
     ){
-        String name = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findUserByUsername(name)
-                .orElseThrow(()->new UserNotFoundException("User not Found"));
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(()->new UserNotFoundException("User Not Found"));
         return ResponseEntity.ok(orderService.displayAllOrder(date, user.getId()));
     }
 
     @PostMapping("/product/review")
     public ResponseEntity<MiscResponse> giveReview(@RequestBody ReviewRequest review){
-        String name = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findUserByUsername(name)
-                .orElseThrow(()->new UserNotFoundException("User not Found"));
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(()->new UserNotFoundException("User Not Found"));
         return ResponseEntity.ok(MiscResponse.builder().response(productReviewService.giveReviewRating(user, review)).build());
     }
     @GetMapping("/order/{id}")
     public ResponseEntity<OrderResponse> orderDetails(@PathVariable String id) {
-        String name = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findUserByUsername(name)
-                .orElseThrow(() -> new UserNotFoundException("User Not Found"));
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(()->new UserNotFoundException("User Not Found"));
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new ItemNotFoundException("Order Not Found"));
         if (user.getId().equals(order.getUserId()))
@@ -197,18 +197,18 @@ public class UserController
 
         @PostMapping("/wishlist")
         public ResponseEntity<MiscResponse> addToWishlist(@RequestBody WishlistRequest wishlistRequest) {
-                String name = SecurityContextHolder.getContext().getAuthentication().getName();
-                User user = userRepository.findUserByUsername(name)
-                                .orElseThrow(() -> new UserNotFoundException("User not Found"));
+            String email = SecurityContextHolder.getContext().getAuthentication().getName();
+            User user = userRepository.findByEmail(email)
+                    .orElseThrow(()->new UserNotFoundException("User Not Found"));
                 return ResponseEntity.ok(MiscResponse.builder()
                                 .response(wishlistService.addItemToWishlist(user, wishlistRequest)).build());
         }
 
         @GetMapping("/wishlist")
         public ResponseEntity<List<ProductPreviewResponse>> showAllOrders() {
-                String name = SecurityContextHolder.getContext().getAuthentication().getName();
-                User user = userRepository.findUserByUsername(name)
-                                .orElseThrow(() -> new UserNotFoundException("User not Found"));
+            String email = SecurityContextHolder.getContext().getAuthentication().getName();
+            User user = userRepository.findByEmail(email)
+                    .orElseThrow(()->new UserNotFoundException("User Not Found"));
                 return ResponseEntity.ok(wishlistService.displayWishlist(user));
         }
 }

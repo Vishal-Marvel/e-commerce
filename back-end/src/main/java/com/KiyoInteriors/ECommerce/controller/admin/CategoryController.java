@@ -46,7 +46,7 @@ public class CategoryController {
 
     @DeleteMapping("/{name}")
     public ResponseEntity<MiscResponse> deleteCategory(@PathVariable String name) {
-        Category category = categoryRepository.findByCategory(name)
+        Category category = categoryRepository.findByCategoryName(name)
                 .orElseThrow(() -> new ItemNotFoundException("Category Not Found"));
         categoryRepository.delete(category);
         return ResponseEntity.ok(

@@ -19,7 +19,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -34,8 +33,8 @@ import java.util.*;
  * addCategory(CategoryRequest request): Adds a new category based on the
  * provided category request.
  */
-@RequiredArgsConstructor
 @Service
+@RequiredArgsConstructor
 public class AdminService {
     SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
     private final CategoryRepository categoryRepository;
@@ -45,8 +44,6 @@ public class AdminService {
     private final ImageService imageService;
     private final UserRepository userRepository;
     private final MongoOperations mongoOperations;
-    private final WishlistRepository wishlistRepository;
-    private final RawImageRepository rawImageRepository;
 
     public void addCategory(CategoryRequest request) {
         if (categoryRepository.existsByCategoryName(request.getCategory())){

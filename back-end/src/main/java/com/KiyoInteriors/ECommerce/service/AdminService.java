@@ -19,7 +19,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -34,8 +33,8 @@ import java.util.*;
  * addCategory(CategoryRequest request): Adds a new category based on the
  * provided category request.
  */
-@RequiredArgsConstructor
 @Service
+@RequiredArgsConstructor
 public class AdminService {
     SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
     private final CategoryRepository categoryRepository;
@@ -45,30 +44,27 @@ public class AdminService {
     private final ImageService imageService;
     private final UserRepository userRepository;
     private final MongoOperations mongoOperations;
-    private final WishlistRepository wishlistRepository;
-    private final RawImageRepository rawImageRepository;
 
     public void addCategory(CategoryRequest request) {
-        Optional<Category> tempCategory = categoryRepository.findByCategory(request.getCategory());
-        if (tempCategory.isPresent()) {
+        if (categoryRepository.existsByCategoryName(request.getCategory())){
             throw new ConstraintException("Category Already Exists");
         }
         Category category = new Category();
-        category.setCategory(request.getCategory());
+        category.setCategoryName(request.getCategory());
         categoryRepository.save(category);
     }
 
     public void updateCategory(String name, CategoryRequest request) {
-        Category category = categoryRepository.findByCategory(name)
+        Category category = categoryRepository.findByCategoryName(name)
                 .orElseThrow(() -> new ItemNotFoundException("Category Not Found"));
-        category.setCategory(request.getCategory());
+        category.setCategoryName(request.getCategory());
         categoryRepository.save(category);
     }
 
     public void addProduct(ProductRequest productRequest) throws IOException {
         Product newProduct = new Product();
         for (String cat: productRequest.getCategory()){
-            if (!categoryRepository.existsByCategory(cat)){
+            if (!categoryRepository.existsByCategoryName(cat)){
                 throw new ItemNotFoundException("Category Not Found");
             }
             newProduct.getCategories().add(cat);
@@ -102,7 +98,7 @@ public class AdminService {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ItemNotFoundException("Product Not Found"));
         for (String cat: productRequest.getCategory()){
-            if (!categoryRepository.existsByCategory(cat)){
+            if (!categoryRepository.existsByCategoryName(cat)){
                 throw new ItemNotFoundException("Category Not Found");
             }
             if (!product.getCategories().contains(cat))

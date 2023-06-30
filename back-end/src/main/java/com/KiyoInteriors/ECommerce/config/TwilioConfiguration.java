@@ -13,9 +13,6 @@ public class TwilioConfiguration {
     private String authToken;
     private String trialNumber;
 
-    public TwilioConfiguration() {
-
-    }
 
     public String getAccountSid() {
         return accountSid;

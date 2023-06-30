@@ -9,7 +9,7 @@ import java.io.InputStream;
 
 public class FileToMultipartFileConverter {
 
-    public MultipartFile convert(File file) throws IOException {
+    public MultipartFile convert(File file) {
         return new CustomMultipartFile(file);
     }
 

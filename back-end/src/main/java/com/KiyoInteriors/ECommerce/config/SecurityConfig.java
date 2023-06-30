@@ -1,12 +1,10 @@
 package com.KiyoInteriors.ECommerce.config;
 
-import com.KiyoInteriors.ECommerce.entity.UserRole;
 import com.KiyoInteriors.ECommerce.service.CustomUserDetailsService;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -18,15 +16,9 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import com.KiyoInteriors.ECommerce.security.JWTAuthEntryPoint;
 import com.KiyoInteriors.ECommerce.security.JWTAuthFilter;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.web.session.SessionManagementFilter;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.Arrays;
 
 
 /**
@@ -38,6 +30,7 @@ import java.util.Arrays;
  */
 @Configuration
 @EnableMethodSecurity
+@EnableWebSecurity
 @RequiredArgsConstructor
 @SecurityScheme(
         name = "Bearer Authentication",

@@ -3,12 +3,14 @@ package com.KiyoInteriors.ECommerce.service;
 import com.KiyoInteriors.ECommerce.DTO.Request.*;
 import com.KiyoInteriors.ECommerce.entity.Cart;
 import com.KiyoInteriors.ECommerce.entity.Wishlist;
+import com.KiyoInteriors.ECommerce.exceptions.APIException;
 import com.KiyoInteriors.ECommerce.exceptions.ConstraintException;
 import com.KiyoInteriors.ECommerce.exceptions.UserNotFoundException;
 import com.KiyoInteriors.ECommerce.repository.CartRepository;
 import com.KiyoInteriors.ECommerce.repository.WishlistRepository;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -52,8 +54,7 @@ public class AuthenticationService {
     private final EmailService emailService;
 
     public void register(RegisterRequest userDTO) throws MessagingException {
-        Optional<User> optionalUser = userRepository.findUserByUsernameOrEmail(userDTO.getUsername(),
-                userDTO.getEmail());
+        Optional<User> optionalUser = userRepository.findByEmail(userDTO.getEmail());
         if (optionalUser.isPresent()) {
             throw new ConstraintException("User Name or Email Already Exists");
         }
@@ -73,9 +74,8 @@ public class AuthenticationService {
 
     public AuthenticationResponse authenticate(AuthenticationRequest loginDTO) {
         Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                loginDTO.getUsernameOrEmail(), loginDTO.getPassword()));
-        User user = userRepository.findUserByUsernameOrEmail(
-                loginDTO.getUsernameOrEmail(), loginDTO.getUsernameOrEmail())
+                loginDTO.getEmail(), loginDTO.getPassword()));
+        User user = userRepository.findByEmail(loginDTO.getEmail())
                 .orElseThrow(() -> new UsernameNotFoundException("User Not found"));
         if (!user.isVerified()){
             throw new AccessDeniedException("User not Verified");
@@ -90,14 +90,14 @@ public class AuthenticationService {
                 .build();
     }
 
-    public void verifyUser(String code) throws Exception {
+    public void verifyUser(String code) {
         User user = userRepository.findUserByOTP(code)
             .orElseThrow(()-> new UserNotFoundException("Invalid Code"));
+        if(user.isVerified()){
+            throw new APIException("User Already Activated", HttpStatus.ALREADY_REPORTED);
+        }
         if(new Date().after(user.getOTPLimit())){
             throw new AccessDeniedException("Code Expired");
-        }
-        if(user.isVerified()){
-            throw new Exception("User Already Activated");
         }
         user.setVerified(true);
         user.setOTP(null);
@@ -107,9 +107,9 @@ public class AuthenticationService {
     }
 
     public void changePassword(ChangePasswordDTO changePasswordDTO) {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findUserByUsername(username)
-                .orElseThrow(() -> new UserNotFoundException("User Not Found"));
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(()->new UserNotFoundException("User Not Found"));
         user.setPassword(passwordEncoder.encode(changePasswordDTO.getNewPassword()));
         userRepository.save(user);
     }
@@ -138,13 +138,13 @@ public class AuthenticationService {
     }
 
     public void requestResetPassword(ResetPasswordRequest resetPasswordRequest) throws MessagingException {
-        User user = userRepository.findUserByUsernameOrEmail(resetPasswordRequest.getUsernameOrEmail() , resetPasswordRequest.getUsernameOrEmail())
+        User user = userRepository.findByEmail(resetPasswordRequest.getEmail())
                 .orElseThrow(()->new UserNotFoundException("User Not Found"));
         sendMail(user, "reset-password", "Reset Password");
     }
 
     public void requestVerify(ResetPasswordRequest resetPasswordRequest) throws MessagingException{
-        User user = userRepository.findUserByUsernameOrEmail(resetPasswordRequest.getUsernameOrEmail() , resetPasswordRequest.getUsernameOrEmail())
+        User user = userRepository.findByEmail(resetPasswordRequest.getEmail())
                 .orElseThrow(()->new UserNotFoundException("User Not Found"));
         sendMail(user, "verify", "Verification");
     }

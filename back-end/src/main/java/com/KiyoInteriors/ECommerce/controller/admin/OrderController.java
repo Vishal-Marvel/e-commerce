@@ -51,8 +51,7 @@ public class OrderController {
 
     @GetMapping("/{id}")
     public ResponseEntity<OrderResponse> orderDetails(@PathVariable String id) {
-        Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new ItemNotFoundException("Order Not Found"));
+
         return ResponseEntity.ok(orderService.orderDetails(id));
 
     }

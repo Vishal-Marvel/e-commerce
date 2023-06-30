@@ -37,7 +37,6 @@ public class UserService
     public void updateUser(final @Valid SetProfileRequest userDTO, final String id) throws IOException {
         User user = this.userRepository.findById(id)
                 .orElseThrow(() -> new UsernameNotFoundException("User Not Found"));
-        user.setName(userDTO.getName());
         user.setMobile(userDTO.getMobile());
         user.setAddresses(userDTO.getAddresses());
         String dataId = UUID.randomUUID().toString();
@@ -54,7 +53,6 @@ public class UserService
                 .addresses(user.getAddresses())
                 .id(user.getId())
                 .username(user.getUsername())
-                .name(user.getName())
                 .build();
     }
 

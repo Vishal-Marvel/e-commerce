@@ -10,7 +10,16 @@ import lombok.Data;
 
 public class AuthenticationRequest {
     @NotBlank
-    private String usernameOrEmail;
+    private String email;
     @NotBlank
     private String password;
+
+    public AuthenticationRequest(String mail, String password123) {
+        this.email = mail;
+        this.password = password123;
+    }
+
+    public AuthenticationRequest() {
+
+    }
 }

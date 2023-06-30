@@ -1,7 +1,6 @@
 package com.KiyoInteriors.ECommerce.entity;
 
 import java.util.Date;
-import java.util.Map;
 import java.util.UUID;
 import java.util.List;
 
@@ -37,7 +36,6 @@ public class User {
     private String id = UUID.randomUUID().toString();
     @Indexed(unique = true)
     private String username;
-    private String name;
     private String password;
     private String mobile;
     private List< Address> addresses;

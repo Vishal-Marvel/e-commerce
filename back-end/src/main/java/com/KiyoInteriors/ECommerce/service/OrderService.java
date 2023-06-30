@@ -178,7 +178,7 @@ public class OrderService {
 
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new ItemNotFoundException("Item for order ID not found"));
-        OrderResponse orderResponse = new OrderResponse(orderId,
+        return new OrderResponse(orderId,
                 order.getTotal(),
                 order.getOrderDate(),
                 order.getOrderStatus(),
@@ -202,7 +202,6 @@ public class OrderService {
                                     .build();
                         })
                         .toList());
-        return orderResponse;
     }
 
 }

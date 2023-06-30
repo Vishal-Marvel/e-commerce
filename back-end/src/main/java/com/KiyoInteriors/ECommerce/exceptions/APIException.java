@@ -11,8 +11,8 @@ import org.springframework.http.HttpStatus;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class APIException extends RuntimeException {
-    private String message;
-    private HttpStatus status;
+    private final String message;
+    private final HttpStatus status;
 
     public APIException(String message,  HttpStatus status) {
         this.message = message;

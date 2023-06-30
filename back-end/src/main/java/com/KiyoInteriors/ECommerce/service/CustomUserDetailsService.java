@@ -28,8 +28,8 @@ import java.util.List;
 public class CustomUserDetailsService implements UserDetailsService {
     private final UserRepository userRepository;
 
-    public UserDetails loadUserByUsername(String usernameOrEmail) throws UsernameNotFoundException {
-        User user = userRepository.findUserByUsernameOrEmail(usernameOrEmail, usernameOrEmail)
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User Not Found"));
         if (!user.isVerified()) {
             throw new AccessDeniedException("User is Not Verified");

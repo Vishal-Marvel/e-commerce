@@ -46,11 +46,11 @@ public class ProductResponse {
         this.rating = product.getRating();
     }
     public Map<Integer, Integer> getRatings(List<ReviewRating> reviewRatings){
-        Map<Integer, Integer> ratings = new HashMap<>();
-        for (ReviewRating reviewRating : reviewRatings){
-            ratings.put(reviewRating.getRating(),
-                    ratings.getOrDefault(reviewRating.getRating(), 0)+1);
+        Map<Integer, Integer> tempRatings = new HashMap<>();
+        for (ReviewRating tempReviewRating : reviewRatings){
+            tempRatings.put(tempReviewRating.getRating(),
+                    tempRatings.getOrDefault(tempReviewRating.getRating(), 0)+1);
         }
-        return ratings;
+        return tempRatings;
     }
 }

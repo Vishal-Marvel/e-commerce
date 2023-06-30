@@ -61,7 +61,9 @@ public class AuthenticationController
             JsonNode rootNode = objectMapper.readTree(response.getBody());
             JsonNode postOfficeNode = rootNode.get(0).get("PostOffice");
             List<String> cities = new ArrayList<>();
-            String state = null, country = null, district = null;
+            String state = null;
+            String country = null;
+            String district = null;
 
             for (JsonNode node : postOfficeNode) {
                 state = node.get("State").asText();
@@ -160,14 +162,14 @@ public class AuthenticationController
     }
 
     @PostMapping("/oauth2/callback/google")
-    public ResponseEntity<?> handleGoogleCallback(@RequestBody RegisterRequest request) throws MessagingException {
+    public ResponseEntity<AuthenticationResponse> handleGoogleCallback(@RequestBody RegisterRequest request) throws MessagingException {
         if (!userRepository.existsByEmail(request.getEmail())) {
             authService.oAuth2register(request);
 
         }
             AuthenticationRequest authenticationRequest = new AuthenticationRequest();
             authenticationRequest.setPassword(request.getPassword());
-            authenticationRequest.setUsernameOrEmail(request.getEmail());
+            authenticationRequest.setEmail(request.getEmail());
             return ResponseEntity.ok(authService.authenticate(authenticationRequest));
      }
 

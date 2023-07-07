@@ -1,0 +1,283 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Slider-Height */
+.slide-height {
+  height: 400px;
+}
+
+.swiper-button-next,
+.swiper-button-prev {
+  color: #3f3e3e !important;
+  fill: #3f3e3e !important;
+  stroke: #3f3e3e black !important;
+}
+
+.MuiTabs-indicator{
+  background: #000 !important;
+}
+
+.Mui-selected {
+  color: #000 !important;
+}
+
+.MuiInputLabel-root {
+  font-size: 18px !important;
+  outline: none;
+  position: absolute;
+}
+
+/* // to target the wrapper element */
+.search .wrapper:first-child {
+  /* justify-content: left; */
+  border-bottom: 1px solid white;
+  padding-left: 0;
+  outline: none;
+  width: 50vh;
+}
+
+.search .wrapper:first-child input {
+  color: #000;
+  border-color: transparent; 
+  outline: none;
+}
+
+/* // to target the search icon */
+.search .wrapper:first-child svg {
+  margin-left: 5px;
+  color: #fff;
+}
+
+/* p {
+  margin: 10px 0 10px 0;
+  display: block;
+}
+
+h1 {
+  font-size: 2rem;
+} */
+
+.row {
+  margin: 100px 50px 50px 50px;
+}
+
+.mainimg {
+  display: inline;
+  border-radius: 15px;
+  width: 430px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+}
+
+.main {
+  /* margin:50px; */
+  margin-left: 50px;
+  margin-right: 0px;
+}
+
+.side {
+  display: inline;
+  float: left;
+  margin-right: 30px;
+}
+
+.ang {
+  margin: 15px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  border-radius: 15px;
+}
+
+.ang:hover {
+  opacity: 50%;
+  box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+}
+
+.priceamt {
+  font-size: 1.5rem;
+}
+
+/* .details h1,
+h3,
+p {
+  padding-bottom: 30px;
+} */
+
+.cart {
+  display: flex;
+  margin-bottom: 20px;
+}
+
+.btn {
+  -webkit-border-radius: 15;
+  -moz-border-radius: 15;
+  border: 1px solid black;
+  border-radius: 15px;
+  color: #000000;
+  font-size: 1.3rem;
+  background: #ffffff;
+
+  text-decoration: none;
+}
+
+.wish .btn {
+  padding: 10px;
+  font-size: 1.2rem;
+}
+.wish .btn:hover,
+.addcart:hover {
+  color: #ffffff;
+  background: #000000;
+}
+
+.addcart {
+  margin: 30px 30px 30px 0;
+}
+
+#shre {
+  margin: 50px 10px 25px 0;
+  color: #ababab;
+}
+
+.tbp {
+  margin: 10px 200px 0px 50px;
+  text-align: justify;
+  line-height: 2;
+}
+
+.top {
+  margin: 0 0 150px;
+}
+
+.title {
+  font-size: 1.5rem;
+}
+
+.customer {
+  font-size: 1.5rem;
+  display: inline-block;
+  margin-right: 15px;
+}
+
+.rating {
+  margin: 50px 0 20px 0;
+}
+
+.icons {
+  margin: 10px;
+}
+.icons:hover {
+  cursor: pointer;
+}
+
+
+/* -----------Vertical Tabs---------------------- */
+.tabs-v {
+  font-family: sans-serif;
+  background: #fff;
+  color: black;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.react-tabs {
+  display: flex;
+  width:auto;
+  height: 100vh;
+  color: black;
+  background: #fff;
+}
+
+.react-tabs__tab-list {
+  display: flex;
+  flex-direction: column;
+  width: 200px;
+  margin: 0;
+  padding: 0;
+  color: #ffffffcc;
+  background: #000000;
+}
+
+.react-tabs__tab {
+  text-align: center;
+  align-items: center;
+  height: 55px;
+  list-style: none;
+  cursor: pointer;
+  font-weight:500;
+  color: #ffffffcc;
+}
+
+/* .react-tabs__tab:nth-child(5){
+  padding-bottom: 100px;
+} */
+
+.react-tabs__tab--selected {
+  border: none;
+  background: #222222;
+  outline: none;
+  border-left: 2px solid #000000db;
+  color: #fff;
+}
+
+.react-tabs__tab-panel {
+  display: none;
+  width: 100%;
+}
+
+.react-tabs__tab-panel--selected {
+  display: block;
+}
+
+.panel-content {
+  text-align: center;
+}
+
+/* -----------Profile Page---------------------- */
+
+.MuiBottomNavigationAction-label{
+  color: #fff;
+}
+
+.Mui-selected label{
+  color: #fff;
+}
+
+
+/* ------------------Search-------------------------- */
+/* .down-search{
+  font-family: sans-serif;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+} */
+/* .search-container {
+  width: 280px;
+  display: flex;
+  flex-direction: column;
+} */
+
+.dropdown {
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid gray;
+}
+
+.dropdown:empty {
+  border: none;
+}
+
+.dropdown-row {
+  cursor: pointer;
+  text-align: start;
+  margin: 2px 0;
+}
+
+/* input {
+  width: 220px;
+} */
+
+.search-inner {
+  display: flex;
+}

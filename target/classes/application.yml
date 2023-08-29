@@ -1,0 +1,24 @@
+spring:
+  data:
+    mongodb:
+      uri: mongodb+srv://vishalpvnedu:vishalmongo@cluster0.sbtwpz7.mongodb.net/e-commerce?retryWrites=true&w=majority
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 811320824769-vgh9cfj27gqcc84p7somqt2c73vbst95.apps.googleusercontent.com
+            client-secret: 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
+logging:
+  level:
+    org:
+      springframework:
+        security: debug
+
+twilio:
+  account_sid: AC68a9e6a8b21d5509a961b993530411d4
+  auth_token: 635426f0594378550823f1d0d375584b
+  trial_number: +13613663579
+
+client-secret: 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
+client-id: 811320824769-vgh9cfj27gqcc84p7somqt2c73vbst95.apps.googleusercontent.com

@@ -1,0 +1,3 @@
+com\KiyoInteriors\ECommerce\ECommerceApplicationTests.class
+com\KiyoInteriors\ECommerce\service\AdminServiceTest.class
+com\KiyoInteriors\ECommerce\service\AuthenticationServiceTest.class

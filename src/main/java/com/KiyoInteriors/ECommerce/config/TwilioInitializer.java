@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration;
  * This class initializes the Twilio API by setting the account SID and authentication token
  * based on the provided Twilio configuration.
  */
-@Configuration
+//@Configuration
 public class TwilioInitializer {
     private final TwilioConfiguration twilioConfiguration;
 
